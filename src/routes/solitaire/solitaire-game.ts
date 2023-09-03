@@ -12,7 +12,7 @@ export class SolitaireGame {
 	defeatedGymLeaders: number;
 	
 	playableAdventures: Adventure[];
-	currentGymLeader: GymLeader | undefined;
+	currentGymLeader: GymLeader;
 	stacks: PokemonTCG.Card[][];
 	playableBench: PokemonTCG.Card[];
 
@@ -60,7 +60,7 @@ export class SolitaireGame {
 		this.focus = '';
 		this.moves = 0;
 
-		this.currentGymLeader = _.first(this.allGymLeaders);
+		this.currentGymLeader = this.allGymLeaders[0];
 		this.playableAdventures = _.take(this.allAdventures, 4);
 		this.playableBench = [];
 
@@ -69,7 +69,7 @@ export class SolitaireGame {
 		this.focusedPoke = null;
 	}
 
-	setupGame(firstPack: PokemonTCG.Card[]) {
+	setupGame(packs: PokemonTCG.Card[][]) {
 		this.allAdventures = _.shuffle(this.allAdventures);
 		this.allGymLeaders = _.shuffle(this.allGymLeaders);
 
@@ -81,9 +81,7 @@ export class SolitaireGame {
 		this.playableAdventures = _.take(this.allAdventures, 4);
 		this.playableBench = [];
 
-		this.packs = [
-			firstPack,
-		];
+		this.packs = packs;
 
 		// Open first pack
 		const openPack = _.shuffle(this.packs.pop());

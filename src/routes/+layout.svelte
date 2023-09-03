@@ -4,14 +4,14 @@
 </script>
 
 <div class="app">
-	<Header />
+	<!--<Header />-->
 
 	<main>
 		<slot />
 	</main>
 
 	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
+		<p>Created by <a href="https://github.com/JeffSallans/pokemon-solitaire-adventure">Jeff Sallans</a></p>
 	</footer>
 </div>
 
