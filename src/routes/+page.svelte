@@ -16,13 +16,10 @@
 
     const flipDurationMs = 100;
 	const handleDndConsider = (index) => (e) => {
-        if (game.moves <= 0) return;
         game.stacks[index] = e.detail.items;
     }
 	const handleDndFinalize = (index) => (e) => {
-        if (game.moves <= 0) return;
         game.stacks[index] = e.detail.items;
-        game.moves--;
     }
 </script>
 
