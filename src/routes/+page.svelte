@@ -7,39 +7,57 @@
 	import {flip} from "svelte/animate";
 	import {dndzone} from "svelte-dnd-action";
 	import { SolitaireGame } from "./solitaire/solitaire-game";
+	import { onDestroy } from "svelte";
 
 	/** @type {import('./$types').PageData} */
 	export let data;
 
-    let game = new SolitaireGame()
-    game.setupGame(data.packs)
+    let game = new SolitaireGame();
+    game.setupGame(data.packs);
+
+    let { moves } = game;
+    let { stacks } = game;
 
     const flipDurationMs = 100;
-	const handleDndConsider = (index) => (e) => {
-        game.stacks[index] = e.detail.items;
-    }
-	const handleDndFinalize = (index) => (e) => {
-        game.stacks[index] = e.detail.items;
-    }
+    
 </script>
 
 <div>
 	<h1>Gym Leader: {game.currentGymLeader.name}</h1>
 
-	<div class="money">{game.moves} moves left</div>
+	<div class="money">{$moves} moves left</div>
 
 	<div class="adventure-container">
-		{#each game.playableAdventures as adv}
-			<div class="adventure">{adv.name}</div>
+		{#each game.playableAdventures as adv(adv.id)}
+			<div class="adventure"
+                on:dragenter={game.onAdventureHoverEnter(adv)} 
+                on:dragleave={game.onAdventureHoverExit(adv)}  
+                on:drop={game.onAdventureDrop(adv)}
+                ondragover="return false"
+            >
+                {adv.name}
+            </div>
 		{/each}
 	</div>
 
 	<div class="stack-container">
-		{#each game.stacks as stack, i}
-		<div class="stack" use:dndzone="{{items: stack, flipDurationMs}}" on:consider="{handleDndConsider(i)}" on:finalize="{handleDndFinalize(i)}">
+		{#each $stacks as stack, i}
+		<div class="stack"
+            on:dragenter={game.onStackHoverEnter(i)} 
+            on:dragleave={game.onStackHoverExit(i)}  
+            on:drop={game.onStackDrop(i)}
+            ondragover="return false"
+        >
 			{#each stack as card(card.id)}
-				<div class="card" animate:flip="{{duration: flipDurationMs}}">
-					<img class="card-image" src="{card.images.small}"/>
+				<div class="card" 
+                    animate:flip="{{duration: flipDurationMs}}"
+                    draggable={game.playableBench.indexOf(card) > -1}
+                    on:dragstart={game.dragCard(card, i)}
+                    on:dragend={game.dropCard()}
+                    on:touchstart={game.dragCard(card, i)}
+                    on:touchend={game.dropCard()}
+                >
+					<img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
 				</div>
 			{/each}
 			<div class="card"> </div>
