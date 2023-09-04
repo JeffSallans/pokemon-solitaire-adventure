@@ -19,7 +19,7 @@
     let { stacks } = game;
 
     const flipDurationMs = 100;
-    
+
 </script>
 
 <div>
@@ -75,7 +75,7 @@
     align-content: center;
     justify-content: space-evenly;
     align-items: flex-start;
-    min-width: 64rem;
+    min-width: 60rem;
 }
 
 .stack {
@@ -85,11 +85,21 @@
     align-content: center;
     justify-content: flex-start;
     align-items: center;
-    min-width: 240px;
+    min-width: 200px;
+
+    background: #afaab833;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 1rem;
 }
 
 .card {
     height: 9rem;
+}
+
+.card-image {
+    width: 200px;
+    border-radius: 10px;
 }
 
 .adventure-container {
@@ -114,8 +124,21 @@
 }
 
 .money {
+    position: fixed;
+    bottom: 0;
+    background: rgb(2,0,36);
+    background: linear-gradient(8deg, rgba(2,0,36,1) 0%, rgba(9,38,121,1) 51%, rgba(2,143,222,1) 92%, rgba(0,177,255,1) 100%);
+    
+    color: white;
+    
+    margin-bottom: 1rem;
+    padding: 1rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    
     text-align: center;
     font-size: 3rem;
-    margin-bottom: 1rem;
+    border-radius: 12px;
+
 }
 </style>

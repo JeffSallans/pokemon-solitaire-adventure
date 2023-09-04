@@ -55,12 +55,6 @@ export class SolitaireGame {
 			console.log('dragCard');
 			this.draggingCard = card;
 			this.draggingCardLastStackIndex = currentStack;
-/*
-			this.stacks.update((v) => {
-				v[currentStack].pop()
-				return v;
-			});
-*/
 		};
 	}
 
@@ -70,12 +64,6 @@ export class SolitaireGame {
 
 			if (this.targetStackIndex != null) this.onStackDrop(this.targetStackIndex);
 			else if (this.targetAdventure != null) this.onAdventureDrop(this.targetAdventure);
-			/*
-			else this.stacks.update((v) => {
-				v[draggingCardLastStackIndex].push(this.draggingCard);
-				return v;
-			});
-			*/
 
 			this.draggingCard = null;
 			this.draggingCardLastStackIndex = null;
@@ -91,12 +79,6 @@ export class SolitaireGame {
 			
 			// Show consideration and disable draggedCard
 			this.targetStackIndex = stackIndex;
-			/*
-			this.stacks.update((v) => {
-				v[this.targetStackIndex].push(this.draggingCard);
-				return v;
-			});
-			*/
 		};
 	}
 
@@ -108,12 +90,6 @@ export class SolitaireGame {
 			console.log('onStackHoverExit');
 	
 			// Remove consideration and enable draggedCard
-			/*
-			this.stacks.update((v) => {
-				v[stackIndex].pop();
-				return v;
-			});
-			*/
 			this.targetStackIndex = null;
 		};
 	}
