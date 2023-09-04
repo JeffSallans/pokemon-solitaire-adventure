@@ -1,5 +1,6 @@
 import { PokemonTCG } from 'pokemon-tcg-sdk-typescript';
-import { shuffle, take } from "lodash";
+import pkg from 'lodash';
+const { take, shuffle } = pkg;
 
 /**
  * Generates a 11 card pokemon card pack for the given set name
