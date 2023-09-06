@@ -3,6 +3,8 @@ import { writable, get } from 'svelte/store';
 import type { Adventure } from './models/adventure';
 import type { GymLeader } from './models/gym-leader';
 import * as _ from "lodash";
+import type { SolitaireCard } from './models/solitaire-card';
+import { SolitaireBattle } from './solitaire-battle';
 
 /** Manages the game state of the pokemon solitaire game */
 export class SolitaireGame {
@@ -18,7 +20,7 @@ export class SolitaireGame {
 	
 	public get playableBench(): SolitaireCard[] {
 
-		const result = [];
+		const result: SolitaireCard[] = [];
 
 		let stackSize = get(this.stacks)[0].length;
 		if (stackSize > 0) result.push(get(this.stacks)[0][stackSize - 1])
@@ -132,8 +134,9 @@ export class SolitaireGame {
 		};
 	}
 
-	onStartGymBattle() {
-		// Trigger auto battler
+	/** Trigger an auto battle */
+	async onStartGymBattle() {
+		this.startBattle();
 	}
 
 	// ----------------------
@@ -175,6 +178,52 @@ export class SolitaireGame {
 
 		// Animate enter
 	}
+
+	/** Run an auto battler on the current gym leader and playable bench */
+	async startBattle() {
+		// Check cost
+		if (get(this.moves) == 0) return;
+
+		// Update moves
+		this.moves.update((n) => n - 1);
+
+		// Setup gym leader
+		const opponentParty: SolitaireCard[] = _.map(this.currentGymLeader.party, (c) => {
+			return {
+				id: _.uniqueId('card'),
+				isNewToCollection: false,
+				cardDef: c
+			};
+		})
+
+		// Trigger auto battler
+		const battle = new SolitaireBattle(opponentParty, this.playableBench, '');
+		const playerWon = await battle.start();
+
+		// If the player won add more cards
+		if (playerWon) {
+			// Update defeated indicator
+			this.defeatedGymLeaders++;
+
+			// Open first pack
+			const shuffledPack = _.shuffle(this.packs[this.defeatedGymLeaders]);
+
+			const openPack: SolitaireCard[] = [];
+			for (const card of shuffledPack) {
+				openPack.push({
+					id: _.uniqueId('card'),
+					isNewToCollection: true,
+					cardDef: card
+				})
+			}
+
+			// Deal new pack
+
+			
+			// Determine new gym leader
+			this.currentGymLeader = this.allGymLeaders[this.defeatedGymLeaders];
+		}
+	}
 	
 	/**
 	 * Create a game object from the player's cookie, or initialise a new game
@@ -206,7 +255,6 @@ export class SolitaireGame {
 		this.allGymLeaders = _.shuffle(this.allGymLeaders);
 
 		this.defeatedGymLeaders = 0;
-		this.focus = '';
 		this.moves.set(0);
 
 		this.currentGymLeader = this.allGymLeaders[0];
@@ -214,17 +262,24 @@ export class SolitaireGame {
 
 		this.packs = [];
 		this.stacks.set([]);
-		this.focusedPoke = null;
+
+		this.draggingCardLastStackIndex = 0;
+		this.draggingCard = null;
+		this.targetStackIndex = null
+		this.targetAdventure = null;
 	}
 
-	setupGame(packs: PokemonTCG.Card[][]) {
+	setupGame(packs: PokemonTCG.Card[][], mistyParty: PokemonTCG.Card[]) {
 		console.log('Setting up game');
+
+		this.allGymLeaders = [
+			{ name: 'Misty', imageUrl: '', tier: 1, party: mistyParty}
+		];
 
 		this.allAdventures = _.shuffle(this.allAdventures);
 		this.allGymLeaders = _.shuffle(this.allGymLeaders);
 
 		this.defeatedGymLeaders = 0;
-		this.focus = '';
 		this.moves.set(2);
 
 		this.currentGymLeader = this.allGymLeaders[0];
@@ -239,13 +294,7 @@ export class SolitaireGame {
 		for (const card of shuffledPack) {
 			openPack.push({
 				id: _.uniqueId('card'),
-				health: card.health,
-				isAsleep: false,
-				isConfused: false,
-				isParalyzed: false,
-				isBurned: false,
-				isPoisoned: false,
-			
+				isNewToCollection: true,
 				cardDef: card
 			})
 		}
@@ -257,7 +306,11 @@ export class SolitaireGame {
 			_.slice(openPack, 3, 7),
 			_.slice(openPack, 7, 11)
 		]);
-		this.focusedPoke = null;
+
+		this.draggingCardLastStackIndex = 0;
+		this.draggingCard = null;
+		this.targetStackIndex = null
+		this.targetAdventure = null;
 	}
 
 	/**

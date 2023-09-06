@@ -8,12 +8,13 @@
 	import {dndzone} from "svelte-dnd-action";
 	import { SolitaireGame } from "./solitaire/solitaire-game";
 	import { onDestroy } from "svelte";
+	import GymLeader from "./GymLeader.svelte";
 
 	/** @type {import('./$types').PageData} */
 	export let data;
 
     let game = new SolitaireGame();
-    game.setupGame(data.packs);
+    game.setupGame(data.packs, data.mistyParty);
 
     let { moves } = game;
     let { stacks } = game;
@@ -23,7 +24,34 @@
 </script>
 
 <div>
-	<h1>Gym Leader: {game.currentGymLeader.name}</h1>
+    <div class="gym">
+        <div class="gym-leader-container">
+            <img class="gym-leader-portrait" alt="{game.currentGymLeader.name}" src="{game.currentGymLeader.imageUrl}"/>
+        </div>
+        <div class="gym-party-container">
+            <div class="gym-party-card"></div>
+        </div>
+        <div class="gym-start-container">
+            <div class="gym-start-cost">Cost 1 Move</div>
+            <button class="gym-start-button" on:click={(e) => game.startBattle()}>Battle</button>
+        </div>
+    
+        <div class="gym-battle-container">
+            <div class="gym-battle-start-text"></div>
+            <div class="gym-battle-ko-text"></div>
+            <div class="gym-battle-win-text"></div>
+            <div class="gym-battle-loss-text"></div>
+    
+            <div class="gym-battle-active-player">
+
+            </div>
+    
+            <div class="gym-battle-active-opponent">
+                
+            </div>
+    
+        </div>
+    </div>
 
 	<div class="money">{$moves} moves left</div>
 
