@@ -4,11 +4,13 @@
 </svelte:head>
 
 <script>
+    import { fade, fly } from 'svelte/transition';
 	import {flip} from "svelte/animate";
 	import {dndzone} from "svelte-dnd-action";
-	import { SolitaireGame } from "./solitaire/solitaire-game";
 	import { onDestroy } from "svelte";
 	import GymLeader from "./GymLeader.svelte";
+	import { SolitaireGame } from "./solitaire/solitaire-game";
+    import { send, receive } from './solitaire/animation-transition';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -58,12 +60,14 @@
 	<div class="adventure-container">
 		{#each game.playableAdventures as adv(adv.id)}
 			<div class="adventure"
+                out:fade
                 on:dragenter={game.onAdventureHoverEnter(adv)} 
                 on:dragleave={game.onAdventureHoverExit(adv)}  
                 on:drop={game.onAdventureDrop(adv)}
                 ondragover="return false"
             >
-                {adv.name}
+                <img class="adventure-image" alt="{adv.name}" src="{adv.imageUrl}" />
+                <div class="adventure-text">{adv.name}</div>
             </div>
 		{/each}
 	</div>
@@ -78,6 +82,8 @@
         >
 			{#each stack as card(card.id)}
 				<div class="card" 
+                    in:receive={{ key: card.id }}
+                    out:send={{ key: card.id }}
                     animate:flip="{{duration: flipDurationMs}}"
                     draggable={game.playableBench.indexOf(card) > -1}
                     on:dragstart={game.dragCard(card, i)}
@@ -143,12 +149,31 @@
 
 .adventure {
     display: inline-block;
-    width: 15rem;
-    height: 5rem;
+    position: relative;
+    width: 16rem;
+    height: 9rem;
     background: grey;
     text-align: center;
     vertical-align: middle;
     color: white;
+}
+
+.adventure-text {
+    display: block;
+    position: absolute;
+
+    top: 0;
+    font-size: 1.5rem;
+    text-align: center;
+    width: 16rem;
+    background: #00000052;
+}
+
+.adventure-image {
+    width: 16rem;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1);
 }
 
 .money {
