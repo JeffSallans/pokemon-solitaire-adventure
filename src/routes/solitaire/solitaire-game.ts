@@ -1,12 +1,17 @@
 import { PokemonTCG } from 'pokemon-tcg-sdk-typescript';
-import { writable, get } from 'svelte/store';
+import { writable, get, type Writable } from 'svelte/store';
 import type { Adventure } from './models/adventure';
 import type { GymLeader } from './models/gym-leader';
 import * as _ from "lodash";
 import type { SolitaireCard } from './models/solitaire-card';
 import { SolitaireBattle } from './solitaire-battle';
 
+import mistyImage from '$lib/images/trainers/misty.png';
+
 import doughnutImage from '$lib/images/adventures/doughnuts.jpeg';
+import digletDigImage from '$lib/images/adventures/diglet-dig.png';
+import forestRescueImage from '$lib/images/adventures/forest-rescue.jpg';
+import sinkingShipImage from '$lib/images/adventures/sinking-ship.jpg';
 
 
 /** Manages the game state of the pokemon solitaire game */
@@ -17,9 +22,9 @@ export class SolitaireGame {
 	
 	defeatedGymLeaders: number;
 	
-	playableAdventures: Adventure[];
+	playableAdventures: Writable<Adventure[]> = writable([]);
 	currentGymLeader: GymLeader;
-	stacks = writable([]);
+	stacks: Writable<SolitaireCard[][]> = writable([]);
 	
 	public get playableBench(): SolitaireCard[] {
 
@@ -109,11 +114,14 @@ export class SolitaireGame {
 	}
 
 	onAdventureHoverEnter(adventure: Adventure) {
-		return () => {
+		return (e: Event) => {
 			// Check eligibility
 			if (this.draggingCard.cardDef.supertype != "Trainer" &&
 				adventure.conditionEnergy.indexOf(this.draggingCard.cardDef.types[0]) == -1) return;
+			
 			console.log('onAdventureHoverEnter');
+			
+			e.target.setAttribute('data-drag-consider', 'true');
 
 			// If eligible remove greyscale and set value
 			this.targetAdventure = adventure;
@@ -121,8 +129,10 @@ export class SolitaireGame {
 	}
 
 	onAdventureHoverExit(adventure: Adventure) {
-		return () => {
+		return (e: Event) => {
 			console.log('onAdventureHoverExit');
+
+			e.target.setAttribute('data-drag-consider', 'false');
 
 			// Add back greyscale and remove value
 			this.targetAdventure = null;
@@ -171,15 +181,20 @@ export class SolitaireGame {
 		// Claim reward
 		this.moves.update((n) => n + adventure.reward);
 		
-		// Animate exit
+		// Animate card exit
 		this.stacks.update((v) => {
 			v[this.draggingCardLastStackIndex].pop();
 			return v;
 		});
 
 		// Generate new adventure
-
-		// Animate enter
+		this.playableAdventures.update((a) => {
+			const replaceIndex = a.indexOf(adventure);
+			const nextAdventure = (this.allAdventures.pop() as Adventure);
+			this.allAdventures.unshift(nextAdventure);
+			a[replaceIndex] = nextAdventure;
+			return a;
+		});
 	}
 
 	/** Run an auto battler on the current gym leader and playable bench */
@@ -254,22 +269,22 @@ export class SolitaireGame {
 
 		this.allAdventures = [
 			{ id: _.uniqueId('adv'), name: 'Help a chief', imageUrl: doughnutImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire, PokemonTCG.Type.Lightening] },
-			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: '$lib/images/adventures/forest-rescue.jpg', reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy] },
-			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: '$lib/images/adventures/sinking-ship.jpg', reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon] },
-			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: '$lib/images/adventures/diglet-dig.png', reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal] },
+			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: forestRescueImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy] },
+			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: sinkingShipImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon] },
+			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: digletDigImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal] },
 			{ id: _.uniqueId('adv'), name: 'Help a chief', imageUrl: doughnutImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire, PokemonTCG.Type.Lightening] },
-			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: '$lib/images/adventures/forest-rescue.jpg', reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy] },
-			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: '$lib/images/adventures/sinking-ship.jpg', reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon] },
-			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: '$lib/images/adventures/diglet-dig.png', reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal] },
+			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: forestRescueImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy] },
+			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: sinkingShipImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon] },
+			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: digletDigImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal] },
 			{ id: _.uniqueId('adv'), name: 'Help a chief', imageUrl: doughnutImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire, PokemonTCG.Type.Lightening] },
-			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: '$lib/images/adventures/forest-rescue.jpg', reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy] },
-			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: '$lib/images/adventures/sinking-ship.jpg', reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon] },
-			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: '$lib/images/adventures/diglet-dig.png', reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal] },
+			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: forestRescueImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy] },
+			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: sinkingShipImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon] },
+			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: digletDigImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal] },
 		];
 		this.allAdventures = _.shuffle(this.allAdventures);
 
 		this.allGymLeaders = [
-			{ name: 'Misty', imageUrl: '', tier: 1, party: [
+			{ name: 'Misty', imageUrl: mistyImage, tier: 1, party: [
 
 			]}
 		];
@@ -279,7 +294,7 @@ export class SolitaireGame {
 		this.moves.set(0);
 
 		this.currentGymLeader = this.allGymLeaders[0];
-		this.playableAdventures = _.take(this.allAdventures, 4);
+		this.playableAdventures.set(_.take(this.allAdventures, 4));
 
 		this.packs = [];
 		this.stacks.set([]);
@@ -294,7 +309,7 @@ export class SolitaireGame {
 		console.log('Setting up game');
 
 		this.allGymLeaders = [
-			{ name: 'Misty', imageUrl: '', tier: 1, party: mistyParty}
+			{ name: 'Misty', imageUrl: mistyImage, tier: 1, party: mistyParty}
 		];
 
 		this.allAdventures = _.shuffle(this.allAdventures);
@@ -304,7 +319,7 @@ export class SolitaireGame {
 		this.moves.set(2);
 
 		this.currentGymLeader = this.allGymLeaders[0];
-		this.playableAdventures = _.take(this.allAdventures, 4);
+		this.playableAdventures.set(_.take(this.allAdventures, 4));
 
 		this.packs = packs;
 

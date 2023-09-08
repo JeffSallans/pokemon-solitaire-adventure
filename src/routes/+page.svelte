@@ -18,8 +18,7 @@
     let game = new SolitaireGame();
     game.setupGame(data.packs, data.mistyParty);
 
-    let { moves } = game;
-    let { stacks } = game;
+    let { moves, stacks, playableAdventures } = game;
 
     const flipDurationMs = 100;
 
@@ -31,7 +30,15 @@
             <img class="gym-leader-portrait" alt="{game.currentGymLeader.name}" src="{game.currentGymLeader.imageUrl}"/>
         </div>
         <div class="gym-party-container">
-            <div class="gym-party-card"></div>
+            {#each game.currentGymLeader.party as card(card.id)}
+				<div class="gym-party-card" 
+                    in:fly={{ y: -300 }}
+                    out:fade
+                    animate:flip="{{duration: flipDurationMs}}"
+                >
+					<img class="gym-party-card-image" alt="{card.name}" src="{card.images.small}"/>
+				</div>
+			{/each}
         </div>
         <div class="gym-start-container">
             <div class="gym-start-cost">Cost 1 Move</div>
@@ -58,15 +65,17 @@
 	<div class="money">{$moves} moves left</div>
 
 	<div class="adventure-container">
-		{#each game.playableAdventures as adv(adv.id)}
+		{#each $playableAdventures as adv(adv.id)}
 			<div class="adventure"
+                in:fly={{y:-200}}
                 out:fade
+                animate:flip="{{duration: flipDurationMs}}"
                 on:dragenter={game.onAdventureHoverEnter(adv)} 
                 on:dragleave={game.onAdventureHoverExit(adv)}  
                 on:drop={game.onAdventureDrop(adv)}
                 ondragover="return false"
             >
-                <img class="adventure-image" alt="{adv.name}" src="{adv.imageUrl}" />
+                <img class="adventure-image" alt="{adv.name}" src="{adv.imageUrl}" data-drag-consider="false"/>
                 <div class="adventure-text">{adv.name}</div>
             </div>
 		{/each}
@@ -94,7 +103,7 @@
 					<img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
 				</div>
 			{/each}
-			<div class="card"> </div>
+			<div class="card card-empty"> </div>
 		</div>
 		{/each}
 	</div>
@@ -128,7 +137,11 @@
 }
 
 .card {
-    height: 9rem;
+    height: 5rem;
+}
+
+.card.card-empty {
+    height: 12rem
 }
 
 .card-image {
@@ -143,7 +156,7 @@
     align-content: center;
     justify-content: space-evenly;
     align-items: center;
-    min-width: 64rem;
+    min-width: 68rem;
     margin-bottom: 1rem;
 }
 
@@ -174,6 +187,13 @@
     height: 100%;
     object-fit: cover;
     filter: grayscale(1);
+
+    transition-property: filter;
+    transition-duration: 500ms;
+}
+
+.adventure-image.adventure-image:not([data-drag-consider="false"]) {
+    filter: grayscale(0);
 }
 
 .money {
@@ -193,5 +213,82 @@
     font-size: 3rem;
     border-radius: 12px;
 
+}
+
+.gym {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.gym-party-card {
+    display: inline-block;
+    /* height: 5rem; */
+}
+
+.gym-leader-container {
+    display: inline-block;
+}
+
+.gym-party-container {
+    display: inline-block;
+}
+
+img.gym-party-card-image {
+    width: 180px;
+    margin: .5rem;
+}
+
+.gym-start-container {
+    display: inline-block;
+    margin: 1rem;
+}
+
+@property --myColor1 {
+  syntax: '<color>';
+  initial-value: rgba(36,4,0,1);
+  inherits: false;
+}
+
+@property --myColor2 {
+  syntax: '<color>';
+  initial-value: rgba(121,24,9,1);
+  inherits: false;
+}
+
+@property --myColor3 {
+  syntax: '<color>';
+  initial-value: rgba(222,68,2,1);
+  inherits: false;
+}
+
+@property --myColor4 {
+  syntax: '<color>';
+  initial-value: rgba(255,175,0,1);
+  inherits: false;
+}
+
+button.gym-start-button {
+    width: 10rem;
+    height: 3rem;
+    background: rgb(36,4,0);
+    background: linear-gradient(8deg, var(--myColor1) 0%, var(--myColor2) 51%, var(--myColor3) 92%, var(--myColor4) 100%);
+    color: #ebcccc;
+    font-weight: bold;
+    transition: --myColor1, --myColor2, --myColor3, --myColor4;
+    transition-duration: 500ms;
+}
+
+button.gym-start-button:hover {
+    --myColor1: rgba(36,4,0,1);
+    --myColor2: rgba(180,50,5,1);
+    --myColor3: rgba(245,144,1,1);
+    --myColor4: rgba(255,175,0,1);
+}
+
+.gym-start-cost {
+    text-align: center;
 }
 </style>

@@ -6,6 +6,8 @@ export interface Adventure {
     name: string;
     imageUrl: string;
     reward: number;
+    /** True if the adventure should show as being considered for drop */
+    consider: boolean;
     conditionType: string;
     conditionEnergy: Type[];
 }
