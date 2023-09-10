@@ -4,6 +4,7 @@ import type { SolitaireCard } from "./solitaire-card";
 export interface BattleCard {
     id: string;
     health: number;
+    maxHealth: number;
     isKnockedOut: boolean;
     isAsleep: boolean;
     isConfused: boolean;

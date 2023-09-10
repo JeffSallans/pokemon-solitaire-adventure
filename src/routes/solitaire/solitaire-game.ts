@@ -12,10 +12,14 @@ import doughnutImage from '$lib/images/adventures/doughnuts.jpeg';
 import digletDigImage from '$lib/images/adventures/diglet-dig.png';
 import forestRescueImage from '$lib/images/adventures/forest-rescue.jpg';
 import sinkingShipImage from '$lib/images/adventures/sinking-ship.jpg';
+import type { BattleCard } from './models/battle-card';
 
 
 /** Manages the game state of the pokemon solitaire game */
 export class SolitaireGame {
+
+	battle = new SolitaireBattle();
+
 	allAdventures: Adventure[];
 	allGymLeaders: GymLeader[];
 	packs: PokemonTCG.Card[][];
@@ -41,9 +45,6 @@ export class SolitaireGame {
 
 		stackSize = get(this.stacks)[3].length;
 		if (stackSize > 0) result.push(get(this.stacks)[3][stackSize - 1])
-
-		stackSize = get(this.stacks)[4].length;
-		if (stackSize > 0) result.push(get(this.stacks)[4][stackSize - 1])
 
 		return result;
 	}
@@ -215,8 +216,7 @@ export class SolitaireGame {
 		})
 
 		// Trigger auto battler
-		const battle = new SolitaireBattle(opponentParty, this.playableBench, '');
-		const playerWon = await battle.start();
+		const playerWon = await this.battle.start(opponentParty, this.playableBench);
 
 		// If the player won add more cards
 		if (playerWon && this.defeatedGymLeaders == 2) {
@@ -239,7 +239,7 @@ export class SolitaireGame {
 
 			// Deal new pack
 			const maxIndex = get(this.stacks).length;
-			const minIndex = 2 - this.defeatedGymLeaders;
+			const minIndex = 0;
 			const indexRange = maxIndex - minIndex;
 
 			let i = 0;
@@ -268,18 +268,18 @@ export class SolitaireGame {
 
 
 		this.allAdventures = [
-			{ id: _.uniqueId('adv'), name: 'Help a chief', imageUrl: doughnutImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire, PokemonTCG.Type.Lightening] },
-			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: forestRescueImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy] },
-			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: sinkingShipImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon] },
-			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: digletDigImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal] },
-			{ id: _.uniqueId('adv'), name: 'Help a chief', imageUrl: doughnutImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire, PokemonTCG.Type.Lightening] },
-			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: forestRescueImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy] },
-			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: sinkingShipImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon] },
-			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: digletDigImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal] },
-			{ id: _.uniqueId('adv'), name: 'Help a chief', imageUrl: doughnutImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire, PokemonTCG.Type.Lightening] },
-			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: forestRescueImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy] },
-			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: sinkingShipImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon] },
-			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: digletDigImage, reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal] },
+			{ id: _.uniqueId('adv'), name: 'Help a chief', imageUrl: doughnutImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire, PokemonTCG.Type.Lightening], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: forestRescueImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: sinkingShipImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: digletDigImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Help a chief', imageUrl: doughnutImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire, PokemonTCG.Type.Lightening], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: forestRescueImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: sinkingShipImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: digletDigImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Help a chief', imageUrl: doughnutImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire, PokemonTCG.Type.Lightening], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Forest Rescue', imageUrl: forestRescueImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass, PokemonTCG.Type.Fairy], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Escape a sinking ship', imageUrl: sinkingShipImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water, PokemonTCG.Type.Dragon], consider: false},
+			{ id: _.uniqueId('adv'), name: 'Fix a broken road', imageUrl: digletDigImage, reward: 3, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting, PokemonTCG.Type.Metal], consider: false},
 		];
 		this.allAdventures = _.shuffle(this.allAdventures);
 
@@ -294,7 +294,7 @@ export class SolitaireGame {
 		this.moves.set(0);
 
 		this.currentGymLeader = this.allGymLeaders[0];
-		this.playableAdventures.set(_.take(this.allAdventures, 4));
+		this.playableAdventures.set([]);
 
 		this.packs = [];
 		this.stacks.set([]);
@@ -316,10 +316,10 @@ export class SolitaireGame {
 		this.allGymLeaders = _.shuffle(this.allGymLeaders);
 
 		this.defeatedGymLeaders = 0;
-		this.moves.set(2);
+		this.moves.set(5);
 
 		this.currentGymLeader = this.allGymLeaders[0];
-		this.playableAdventures.set(_.take(this.allAdventures, 4));
+		this.playableAdventures.set(_.take(this.allAdventures, 2));
 
 		this.packs = packs;
 
@@ -336,11 +336,10 @@ export class SolitaireGame {
 		}
 
 		this.stacks.set([
-			[],
-			[],
-			_.slice(openPack, 0, 3),
-			_.slice(openPack, 3, 7),
-			_.slice(openPack, 7, 11)
+			_.slice(openPack, 0, 2),
+			_.slice(openPack, 2, 5),
+			_.slice(openPack, 5, 8),
+			_.slice(openPack, 8, 11)
 		]);
 
 		this.draggingCardLastStackIndex = 0;

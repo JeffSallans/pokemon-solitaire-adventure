@@ -11,6 +11,7 @@
 	import GymLeader from "./GymLeader.svelte";
 	import { SolitaireGame } from "./solitaire/solitaire-game";
     import { send, receive } from './solitaire/animation-transition';
+	import { range } from 'lodash';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -19,6 +20,7 @@
     game.setupGame(data.packs, data.mistyParty);
 
     let { moves, stacks, playableAdventures } = game;
+    let { activeOpponent, activePlayer } = game.battle;
 
     const flipDurationMs = 100;
 
@@ -61,6 +63,73 @@
     
         </div>
     </div>
+    {#if $activeOpponent != null && $activePlayer != null}
+    <div class="battle-container">
+        <div class="battle-background-1"></div>
+        <div class="battle-background-2"></div>
+        <div class="battle-background-3"></div>
+
+        <div class="battle-my-card">
+            <!-- Card -->
+            {#key $activePlayer}
+                <div class="battle-card" 
+                    in:fly={{x:-100}}
+                    out:fade
+                >
+                    <img class="battle-card-image" alt="{$activePlayer.cardInfo.cardDef.name}" src="{$activePlayer.cardInfo.cardDef.images.small}"/>
+                </div>
+            {/key}
+            <!-- Health Counters -->
+            <div class="battle-health">
+                {#each range($activePlayer.maxHealth / 10) as i}
+                    {#if i * 10 <= $activePlayer.health}
+                        <div 
+                        in:fade
+                        out:fly={{y:100}}
+                        class="battle-health-increment battle-health-increment-filled"></div>
+                    {:else}
+                        <div
+                        in:fade
+                        out:fly={{y:100}}
+                        class="battle-health-increment"></div>
+                    {/if}
+                {/each}
+            </div>
+        </div>
+
+        <div class="battle-opp-card">
+            <!-- Card -->
+            {#key $activeOpponent}
+                <div class="battle-card" 
+                    in:fly={{x:-100}}
+                    out:fade
+                >
+                    <img class="battle-card-image" alt="{$activeOpponent.cardInfo.cardDef.name}" src="{$activeOpponent.cardInfo.cardDef.images.small}"/>
+                </div>
+            {/key}
+            <!-- Health Counters -->
+            <div class="battle-health">
+                {#each range($activeOpponent.maxHealth / 10) as i}
+                    {#if i * 10 <= $activeOpponent.health}
+                        <div 
+                        in:fade
+                        out:fly={{y:100}}
+                        class="battle-health-increment battle-health-increment-filled"></div>
+                    {:else}
+                        <div
+                        in:fade
+                        out:fly={{y:100}}
+                        class="battle-health-increment"></div>
+                    {/if}
+                {/each}
+            </div>
+        </div>
+
+        <div class="battle-text"></div>
+        <div class="battle-win"></div>
+        <div class="battle-lose"></div>
+    </div>
+    {/if}
 
 	<div class="money">{$moves} moves left</div>
 
@@ -291,4 +360,5 @@ button.gym-start-button:hover {
 .gym-start-cost {
     text-align: center;
 }
+
 </style>
