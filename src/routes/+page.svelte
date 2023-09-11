@@ -20,7 +20,7 @@
     game.setupGame(data.packs, data.mistyParty);
 
     let { moves, stacks, playableAdventures } = game;
-    let { activeOpponent, activePlayer } = game.battle;
+    let { activeOpponent, activePlayer, state } = game.battle;
 
     const flipDurationMs = 100;
 
@@ -46,83 +46,69 @@
             <div class="gym-start-cost">Cost 1 Move</div>
             <button class="gym-start-button" on:click={(e) => game.startBattle()}>Battle</button>
         </div>
-    
-        <div class="gym-battle-container">
-            <div class="gym-battle-start-text"></div>
-            <div class="gym-battle-ko-text"></div>
-            <div class="gym-battle-win-text"></div>
-            <div class="gym-battle-loss-text"></div>
-    
-            <div class="gym-battle-active-player">
-
-            </div>
-    
-            <div class="gym-battle-active-opponent">
-                
-            </div>
-    
-        </div>
     </div>
-    {#if $activeOpponent != null && $activePlayer != null}
+    {#if $state == 'Battling'}
     <div class="battle-container">
         <div class="battle-background-1"></div>
         <div class="battle-background-2"></div>
         <div class="battle-background-3"></div>
 
-        <div class="battle-my-card">
-            <!-- Card -->
-            {#key $activePlayer}
-                <div class="battle-card" 
-                    in:fly={{x:-100}}
-                    out:fade
-                >
-                    <img class="battle-card-image" alt="{$activePlayer.cardInfo.cardDef.name}" src="{$activePlayer.cardInfo.cardDef.images.small}"/>
+        <div class="battle-cards">
+            {#if $activePlayer != null}
+            <div class="battle-my-card">
+                <!-- Card -->
+                {#key $activePlayer.id}
+                    <div class="battle-card" 
+                        in:fly={{x:-100}}
+                        out:fade
+                    >
+                        <img class="battle-card-image" alt="{$activePlayer.cardInfo.cardDef.name}" src="{$activePlayer.cardInfo.cardDef.images.small}"/>
+                    </div>
+                {/key}
+                <!-- Health Counters -->
+                <div class="battle-health">
+                    {#each range(0, $activePlayer.maxHealth / 10) as i}
+                        {#if (i+1) * 10 <= $activePlayer.health}
+                            <div 
+                            out:fly={{y:100, duration: 200}}
+                            class="battle-health-increment battle-health-increment-filled"></div>
+                        {:else}
+                            <div
+                            in:fade={{delay: 200}}
+                            class="battle-health-increment"></div>
+                        {/if}
+                    {/each}
                 </div>
-            {/key}
-            <!-- Health Counters -->
-            <div class="battle-health">
-                {#each range($activePlayer.maxHealth / 10) as i}
-                    {#if i * 10 <= $activePlayer.health}
-                        <div 
-                        in:fade
-                        out:fly={{y:100}}
-                        class="battle-health-increment battle-health-increment-filled"></div>
-                    {:else}
-                        <div
-                        in:fade
-                        out:fly={{y:100}}
-                        class="battle-health-increment"></div>
-                    {/if}
-                {/each}
             </div>
-        </div>
-
-        <div class="battle-opp-card">
-            <!-- Card -->
-            {#key $activeOpponent}
-                <div class="battle-card" 
-                    in:fly={{x:-100}}
-                    out:fade
-                >
-                    <img class="battle-card-image" alt="{$activeOpponent.cardInfo.cardDef.name}" src="{$activeOpponent.cardInfo.cardDef.images.small}"/>
+            {/if}
+    
+            {#if $activeOpponent != null}
+            <div class="battle-opp-card">
+                <!-- Card -->
+                {#key $activeOpponent.id}
+                    <div class="battle-card" 
+                        in:fly={{x:-100}}
+                        out:fade
+                    >
+                        <img class="battle-card-image" alt="{$activeOpponent.cardInfo.cardDef.name}" src="{$activeOpponent.cardInfo.cardDef.images.small}"/>
+                    </div>
+                {/key}
+                <!-- Health Counters -->
+                <div class="battle-health">
+                    {#each range($activeOpponent.maxHealth / 10) as i}
+                        {#if i * 10 <= $activeOpponent.health}
+                            <div 
+                            out:fly={{y:100, duration: 200}}
+                            class="battle-health-increment battle-health-increment-filled"></div>
+                        {:else}
+                            <div
+                            in:fade={{delay: 200}}
+                            class="battle-health-increment"></div>
+                        {/if}
+                    {/each}
                 </div>
-            {/key}
-            <!-- Health Counters -->
-            <div class="battle-health">
-                {#each range($activeOpponent.maxHealth / 10) as i}
-                    {#if i * 10 <= $activeOpponent.health}
-                        <div 
-                        in:fade
-                        out:fly={{y:100}}
-                        class="battle-health-increment battle-health-increment-filled"></div>
-                    {:else}
-                        <div
-                        in:fade
-                        out:fly={{y:100}}
-                        class="battle-health-increment"></div>
-                    {/if}
-                {/each}
             </div>
+            {/if}
         </div>
 
         <div class="battle-text"></div>
@@ -359,6 +345,53 @@ button.gym-start-button:hover {
 
 .gym-start-cost {
     text-align: center;
+}
+
+.battle-container {
+    position: fixed;
+    display: block;
+    height: 100vh;
+    width: 100vw;
+    background: #0000009c;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+}
+
+.battle-background-1 {
+    position: absolute;
+    display: inline-block;
+    width: 100vw;
+    height: 250px;
+    background: #3c5beb;
+    top: calc(50vh - 125px);
+}
+
+.battle-cards {
+    position: relative;
+    display: flex;
+    width: 100%;
+    max-width: 64rem;
+    margin: 0 auto;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+}
+
+.battle-health-increment {
+    position: relative;
+    display: inline-block;
+    width: 1.5rem;
+    height: 2rem;
+    background: #e3fbe3;
+    margin-right: 2px;
+    border-radius: 8px;
+}
+
+.battle-health-increment.battle-health-increment-filled {
+    background: #53ef53;
 }
 
 </style>

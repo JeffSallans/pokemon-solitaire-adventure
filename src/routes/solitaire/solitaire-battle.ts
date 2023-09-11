@@ -12,12 +12,15 @@ export class SolitaireBattle {
 	activePlayer: Writable<BattleCard | null> = writable(null);
 	activeOpponent: Writable<BattleCard | null> = writable(null);
 
-	state: string;
+	playerHealth: Writable<boolean[]> = writable([]);
+	opponentHealth: Writable<boolean[]> = writable([]);
+
+	state = writable('');
 
 	constructor() {
 		this.opponentParty = [];
 		this.playerParty = [];
-		this.state = '';
+		this.state.set('Waiting');
 	}
 
 	/** Starts the battles, returns true if the player won */
@@ -26,25 +29,28 @@ export class SolitaireBattle {
 		this.playerParty = _.map(_playerParty, (c) => this.createCard(c));
 		this.activeOpponent.set(this.opponentParty[0]);
 		this.activePlayer.set(this.playerParty[0]);
-		this.state = 'Battling';
+		this.state.set('Battling');
+		await new Promise(resolve => setTimeout(resolve, 500));
 
-		while (this.state == 'Battling') {
+		while (get(this.state) == 'Battling') {
 			this.opponentTurn();
-			this.state = this.checkEndCondition();
-			if (this.state != 'Battling') break;
-
-			await new Promise(resolve => setTimeout(resolve, 1000));
+			await new Promise(resolve => setTimeout(resolve, 500));
+			
+			this.state.set(this.checkEndCondition());
+			await new Promise(resolve => setTimeout(resolve, 500));
+			if (get(this.state) != 'Battling') break;
 
 			this.playerTurn();
-			this.state = this.checkEndCondition();
-			if (this.state != 'Battling') break;
+			await new Promise(resolve => setTimeout(resolve, 500));
 
-			await new Promise(resolve => setTimeout(resolve, 1000));
+			this.state.set(this.checkEndCondition());
+			await new Promise(resolve => setTimeout(resolve, 500));
+			if (get(this.state) != 'Battling') break;
 		}
 
 		await new Promise(resolve => setTimeout(resolve, 1000));
 
-		return this.state == 'Win';
+		return get(this.state) == 'Win';
 	}
 
 	/** Used to create the battle card data model */
