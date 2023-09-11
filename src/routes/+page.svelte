@@ -11,7 +11,8 @@
 	import GymLeader from "./GymLeader.svelte";
 	import { SolitaireGame } from "./solitaire/solitaire-game";
     import { send, receive } from './solitaire/animation-transition';
-	import { range } from 'lodash';
+	import lodash from 'lodash';
+	const { range } = lodash;
 
 	/** @type {import('./$types').PageData} */
 	export let data;
