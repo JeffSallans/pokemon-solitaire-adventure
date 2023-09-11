@@ -6,7 +6,7 @@ export async function load(): Promise<PageServerLoad> {
 	
 	const packs = [
 		(await generatePack('base1')),
-		(await generatePack('base1'))
+		//(await generatePack('base1')),
 		//(await generatePack('base1'))
 	];
 
@@ -17,6 +17,7 @@ export async function load(): Promise<PageServerLoad> {
 			await PokemonTCG.findCardByID('base1-59'), // Poliwag 10+/40
 			await PokemonTCG.findCardByID('base1-64'), // Starmie 20/60
 		],
+		/*
 		surgeParty: [
 			await PokemonTCG.findCardByID('base1-67'), // Voltorb 10/40
 			await PokemonTCG.findCardByID('base1-20'), // Electabuzz 30+/70
@@ -29,6 +30,7 @@ export async function load(): Promise<PageServerLoad> {
 			await PokemonTCG.findCardByID('base1-12'), // Ninetails 80/80
 			await PokemonTCG.findCardByID('base1-23'), // Arcanine 80-/100
 		]
+		*/
 	};
 };
 
