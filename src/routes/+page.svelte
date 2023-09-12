@@ -30,6 +30,7 @@
         const packs = await packsRes.json();
         const gymLeaderRes = await fetch("/leaders");
         const gymLeader = await gymLeaderRes.json();
+
         game.setupGame(packs, gymLeader.mistyParty, gymLeader.surgeParty, gymLeader.blaineParty);
 
         if (packsRes.ok) {
