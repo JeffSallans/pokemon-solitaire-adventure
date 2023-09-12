@@ -155,9 +155,9 @@ export class SolitaireBattle {
 	dealDamage(user: BattleCard | null, target: Writable<BattleCard | null> | null, move: BattleMove) {
 		if (user == null || target == null) return;
 		let weaknessMultiplier = 1;
-		if (_.get(target, 'cardInfo.cardDef.weaknesses[0].type', null) == move.type) weaknessMultiplier = 2;
+		if (_.get(get(target), 'cardInfo.cardDef.weaknesses[0].type', null) == move.type) weaknessMultiplier = 2;
 		let resistanceValue = 0;
-		if (_.get(target, 'cardInfo.cardDef.resistances[0].type', null) == move.type) resistanceValue = 3;
+		if (_.get(get(target), 'cardInfo.cardDef.resistances[0].type', null) == move.type) resistanceValue = 3;
 
 		if (move.damageCalculation == 'standard') {
 			const damage = Math.max((move.damage * weaknessMultiplier) - resistanceValue, 0);

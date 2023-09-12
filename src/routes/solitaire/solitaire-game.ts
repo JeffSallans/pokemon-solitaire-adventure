@@ -29,7 +29,7 @@ export class SolitaireGame {
 	defeatedGymLeaders: number;
 	
 	playableAdventures: Writable<Adventure[]> = writable([]);
-	currentGymLeader: GymLeader;
+	currentGymLeader: Writeable<GymLeader> = writable(null);
 	stacks: Writable<SolitaireCard[][]> = writable([]);
 	
 	public get playableBench(): SolitaireCard[] {
@@ -174,6 +174,11 @@ export class SolitaireGame {
 		});
 		// Animate enter
 
+
+		// Check if player lost
+		if (get(this.moves) == 0) {
+			document.write('YOU LOSE, refresh to play again');
+		}
 	}
 
 	completeAdventureWithPoke(card: SolitaireCard, adventure: Adventure) {
@@ -209,7 +214,7 @@ export class SolitaireGame {
 		this.moves.update((n) => n - 1);
 
 		// Setup gym leader
-		const opponentParty: SolitaireCard[] = _.map(this.currentGymLeader.party, (c) => {
+		const opponentParty: SolitaireCard[] = _.map(get(this.currentGymLeader).party, (c) => {
 			return {
 				id: _.uniqueId('card'),
 				isNewToCollection: false,
@@ -218,7 +223,13 @@ export class SolitaireGame {
 		})
 
 		// Trigger auto battler
-		const playerWon = await this.battle.start(opponentParty, this.playableBench);
+		const playablePokemon = _.filter(this.playableBench, card => card.cardDef.supertype == 'Pokémon');
+		const playerWon = await this.battle.start(opponentParty, playablePokemon);
+
+		// Check if player lost
+		if (!playerWon && get(this.moves) == 0) {
+			document.write('YOU LOSE, refresh to play again');
+		}
 
 		// If the player won add more cards
 		if (playerWon && this.defeatedGymLeaders == 2) {
@@ -258,7 +269,7 @@ export class SolitaireGame {
 			}
 
 			// Determine new gym leader
-			this.currentGymLeader = this.allGymLeaders[this.defeatedGymLeaders];
+			this.currentGymLeader.set(this.allGymLeaders[this.defeatedGymLeaders]);
 		}
 	}
 	
@@ -295,7 +306,7 @@ export class SolitaireGame {
 		this.defeatedGymLeaders = 0;
 		this.moves.set(0);
 
-		this.currentGymLeader = this.allGymLeaders[0];
+		this.currentGymLeader.set(this.allGymLeaders[0]);
 		this.playableAdventures.set([]);
 
 		this.packs = [];
@@ -322,7 +333,7 @@ export class SolitaireGame {
 		this.defeatedGymLeaders = 0;
 		this.moves.set(5);
 
-		this.currentGymLeader = this.allGymLeaders[0];
+		this.currentGymLeader.set(this.allGymLeaders[0]);
 		this.playableAdventures.set(_.take(this.allAdventures, 2));
 
 		this.packs = packs;

@@ -21,8 +21,8 @@ export async function GET() {
 		blaineParty: [
 			await PokemonTCG.findCardByID('base1-60'), // Ponyta 30/40 
 			await PokemonTCG.findCardByID('base1-36'), // Magmar 50/50
+			await PokemonTCG.findCardByID('base1-46'), // Charmander 50/80
 			await PokemonTCG.findCardByID('base1-12'), // Ninetails 80/80
-			await PokemonTCG.findCardByID('base1-23'), // Arcanine 80-/100
 		]
 	});
 }

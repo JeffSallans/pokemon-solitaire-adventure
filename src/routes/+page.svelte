@@ -20,7 +20,7 @@
 
     let game = new SolitaireGame();
 
-    let { moves, stacks, playableAdventures } = game;
+    let { moves, stacks, playableAdventures, currentGymLeader } = game;
     let { activeOpponent, activePlayer, state } = game.battle;
 
     const flipDurationMs = 100;
@@ -50,10 +50,12 @@
     {:then result}
     <div class="gym">
         <div class="gym-leader-container">
-            <img class="gym-leader-portrait" alt="{game.currentGymLeader.name}" src="{game.currentGymLeader.imageUrl}"/>
+            <img class="gym-leader-portrait" alt="{$currentGymLeader.name}" src="{$currentGymLeader.imageUrl}"/>
+            <button class="gym-start-button" on:click={(e) => game.startBattle()}>Battle</button>
+            <div class="gym-start-cost">Cost 1 Move</div>
         </div>
         <div class="gym-party-container">
-            {#each game.currentGymLeader.party as card(card.id)}
+            {#each $currentGymLeader.party as card(card.id)}
 				<div class="gym-party-card" 
                     in:fly={{ y: -300 }}
                     out:fade
@@ -62,10 +64,6 @@
 					<img class="gym-party-card-image" alt="{card.name}" src="{card.images.small}"/>
 				</div>
 			{/each}
-        </div>
-        <div class="gym-start-container">
-            <div class="gym-start-cost">Cost 1 Move</div>
-            <button class="gym-start-button" on:click={(e) => game.startBattle()}>Battle</button>
         </div>
     </div>
     {#if $state == 'Battling'}
@@ -319,6 +317,12 @@
 
 .gym-leader-container {
     display: inline-block;
+    width: 12rem;
+    margin-right: 1rem;
+}
+
+img.gym-leader-portrait {
+    width: 12rem;
 }
 
 .gym-party-container {
@@ -328,11 +332,6 @@
 img.gym-party-card-image {
     width: 180px;
     margin: .5rem;
-}
-
-.gym-start-container {
-    display: inline-block;
-    margin: 1rem;
 }
 
 @property --myColor1 {
@@ -360,7 +359,7 @@ img.gym-party-card-image {
 }
 
 button.gym-start-button {
-    width: 10rem;
+    width: 12rem;
     height: 3rem;
     background: rgb(36,4,0);
     background: linear-gradient(8deg, var(--myColor1) 0%, var(--myColor2) 51%, var(--myColor3) 92%, var(--myColor4) 100%);
