@@ -35,6 +35,7 @@
 		"lodash": "^4.17.21",
 		"pokemon-tcg-sdk-typescript": "^1.3.4",
 		"pokemontcgsdk": "^2.0.0",
-		"svelte-dnd-action": "^0.9.27"
+		"svelte-dnd-action": "^0.9.27",
+		"svelte-loading-spinners": "^0.3.4"
 	}
 }

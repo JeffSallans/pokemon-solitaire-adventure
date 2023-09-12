@@ -8,6 +8,7 @@
 	import {flip} from "svelte/animate";
 	import {dndzone} from "svelte-dnd-action";
 	import { onDestroy } from "svelte";
+    import { Stretch } from 'svelte-loading-spinners';
 	import GymLeader from "./GymLeader.svelte";
 	import { SolitaireGame } from "./solitaire/solitaire-game";
     import { send, receive } from './solitaire/animation-transition';
@@ -18,16 +19,35 @@
 	export let data;
 
     let game = new SolitaireGame();
-    game.setupGame(data.packs, data.mistyParty);
 
     let { moves, stacks, playableAdventures } = game;
     let { activeOpponent, activePlayer, state } = game.battle;
 
     const flipDurationMs = 100;
 
+    async function fetchData() {
+        const packsRes = await fetch("/pack");
+        const packs = await packsRes.json();
+        const gymLeaderRes = await fetch("/leaders");
+        const gymLeader = await gymLeaderRes.json();
+        game.setupGame(packs, gymLeader.mistyParty, gymLeader.surgeParty, gymLeader.blaineParty);
+
+        if (packsRes.ok) {
+            return packs;
+        } else {
+            throw new Error(packs);
+        }
+    }
+
 </script>
 
+
 <div>
+    {#await fetchData()}
+        <div class="spinner-container">
+            <Stretch size="120" color="#3c5beb" unit="px" duration="1s" />
+        </div>
+    {:then result}
     <div class="gym">
         <div class="gym-leader-container">
             <img class="gym-leader-portrait" alt="{game.currentGymLeader.name}" src="{game.currentGymLeader.imageUrl}"/>
@@ -97,7 +117,7 @@
                 <!-- Health Counters -->
                 <div class="battle-health">
                     {#each range($activeOpponent.maxHealth / 10) as i}
-                        {#if i * 10 <= $activeOpponent.health}
+                        {#if (i+1) * 10 <= $activeOpponent.health}
                             <div 
                             out:fly={{y:100, duration: 200}}
                             class="battle-health-increment battle-health-increment-filled"></div>
@@ -164,9 +184,22 @@
 		{/each}
 	</div>
 
+    {:catch error}
+      <p style="color: red">{error.message}</p>
+    {/await}
 </div>
 
+
 <style>
+.spinner-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-evenly;
+    align-items: flex-start;
+}
+
 .stack-container {
     display: flex;
     flex-direction: row;
