@@ -77,7 +77,7 @@ export class SolitaireGame {
 		};
 	}
 
-	onExit(card: PokemonTCG.Card) {
+	onHoverExit(card: PokemonTCG.Card) {
 		return () => {
 			console.log('onHoverExit');
 			this.focusCard.set(null);
@@ -87,6 +87,8 @@ export class SolitaireGame {
 	/** Sets the drag for the card */
 	dragCard(card: SolitaireCard, currentStack: number) {
 		return () => {
+			if (this.playableBench.indexOf(card) == -1) return;
+
 			console.log('dragCard');
 			this.draggingCard = card;
 			this.draggingCardLastStackIndex = currentStack;

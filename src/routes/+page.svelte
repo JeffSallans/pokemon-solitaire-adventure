@@ -45,6 +45,9 @@
 <div>
     {#await fetchData()}
         <div class="spinner-container">
+            <div class="spinner-container-goal">
+                Defeat 3 gym leaders before running out of moves!
+            </div>
             <Stretch size="120" color="#3c5beb" unit="px" duration="1s" />
         </div>
     {:then result}
@@ -216,11 +219,17 @@
 <style>
 .spinner-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: nowrap;
     align-content: center;
-    justify-content: space-evenly;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner-container-goal {
+    font-size: 3rem;
+    color: #2b44b4;
+    text-align: center;
 }
 
 .game-container {
@@ -263,7 +272,7 @@
 }
 
 .card.card-empty {
-    height: 18rem
+    height: 20rem
 }
 
 .card-image {
