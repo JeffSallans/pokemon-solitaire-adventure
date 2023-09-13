@@ -6,7 +6,6 @@
 <script>
     import { fade, fly } from 'svelte/transition';
 	import {flip} from "svelte/animate";
-	import {dndzone} from "svelte-dnd-action";
 	import { onDestroy } from "svelte";
     import { Stretch } from 'svelte-loading-spinners';
 	import GymLeader from "./GymLeader.svelte";
@@ -20,7 +19,7 @@
 
     let game = new SolitaireGame();
 
-    let { moves, stacks, playableAdventures, currentGymLeader } = game;
+    let { moves, stacks, playableAdventures, currentGymLeader, focusCard } = game;
     let { activeOpponent, activePlayer, state } = game.battle;
 
     const flipDurationMs = 100;
@@ -49,24 +48,93 @@
             <Stretch size="120" color="#3c5beb" unit="px" duration="1s" />
         </div>
     {:then result}
-    <div class="gym">
-        <div class="gym-leader-container">
-            <img class="gym-leader-portrait" alt="{$currentGymLeader.name}" src="{$currentGymLeader.imageUrl}"/>
-            <button class="gym-start-button" on:click={(e) => game.startBattle()}>Battle</button>
-            <div class="gym-start-cost">Cost 1 Move</div>
-        </div>
-        <div class="gym-party-container">
-            {#each $currentGymLeader.party as card(card.id)}
-				<div class="gym-party-card" 
-                    in:fly={{ y: -300 }}
+    <div class="game-container">
+        <div class="adventure-container">
+            {#each $playableAdventures as adv(adv.id)}
+                <div class="adventure"
+                    in:fly={{y:-200}}
                     out:fade
                     animate:flip="{{duration: flipDurationMs}}"
+                    on:dragenter={game.onAdventureHoverEnter(adv)} 
+                    on:dragleave={game.onAdventureHoverExit(adv)}  
+                    on:drop={game.onAdventureDrop(adv)}
+                    ondragover="return false"
                 >
-					<img class="gym-party-card-image" alt="{card.name}" src="{card.images.small}"/>
-				</div>
-			{/each}
+                    <img class="adventure-image" alt="{adv.name}" src="{adv.imageUrl}" data-drag-consider="false"/>
+                    <div class="adventure-text">{adv.name}</div>
+
+                    <div class="adventure-card-zone">
+                        <img class="adventure-energy" alt="energy" src="{adv.energyUrl}"/>
+                    </div>
+                </div>
+            {/each}
+        </div>
+
+        <div class="main-container">
+            <div class="gym">
+                <div class="gym-leader-container">
+                    <img class="gym-leader-portrait" alt="{$currentGymLeader.name}" src="{$currentGymLeader.imageUrl}"/>
+                    <button class="gym-start-button" on:click={(e) => game.startBattle()}>Battle</button>
+                    <div class="gym-start-cost">Cost 1 Move</div>
+                </div>
+                <div class="gym-party-container">
+                    {#each $currentGymLeader.party as card(card.id)}
+                        <div class="gym-party-card" 
+                            in:fly={{ y: -300 }}
+                            out:fade
+                            animate:flip="{{duration: flipDurationMs}}"
+                            on:mouseenter={game.onHover(card)}
+                            on:mouseleave={game.onHoverExit(card)}
+                        >
+                            <img class="gym-party-card-image" alt="{card.name}" src="{card.images.small}"/>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+        
+            <div class="stack-container">
+                {#each $stacks as stack, i}
+                <div class="stack"
+                    on:dragenter={game.onStackHoverEnter(i)} 
+                    on:dragleave={game.onStackHoverExit(i)}  
+                    on:drop={game.onStackDrop(i)}
+                    ondragover="return false"
+                >
+                    {#each stack as card(card.id)}
+                        <div class="card" 
+                            in:receive={{ key: card.id }}
+                            out:send={{ key: card.id }}
+                            animate:flip="{{duration: flipDurationMs}}"
+                            draggable={game.playableBench.indexOf(card) > -1}
+                            on:dragstart={game.dragCard(card, i)}
+                            on:dragend={game.dropCard()}
+                            on:touchstart={game.dragCard(card, i)}
+                            on:touchend={game.dropCard()}
+                            on:mouseenter={game.onHover(card.cardDef)}
+                            on:mouseleave={game.onHoverExit(card.cardDef)}
+                        >
+                            <img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
+                        </div>
+                    {/each}
+                    <div class="card card-empty"> </div>
+                </div>
+                {/each}
+            </div>
+        </div>
+
+        <div class="inspect-container">
+            {#if $focusCard != null}
+            {#key $focusCard.id}
+            <div class="inspect-card"
+                in:fade
+            >
+                <img class="inspect-card-image" alt={$focusCard.name} src={$focusCard.images.large} />
+            </div>
+            {/key}
+            {/if}
         </div>
     </div>
+
     {#if $state == 'Battling'}
     <div class="battle-container">
         <div class="battle-background-1"></div>
@@ -137,51 +205,7 @@
     </div>
     {/if}
 
-	<div class="money">{$moves} moves left</div>
-
-	<div class="adventure-container">
-		{#each $playableAdventures as adv(adv.id)}
-			<div class="adventure"
-                in:fly={{y:-200}}
-                out:fade
-                animate:flip="{{duration: flipDurationMs}}"
-                on:dragenter={game.onAdventureHoverEnter(adv)} 
-                on:dragleave={game.onAdventureHoverExit(adv)}  
-                on:drop={game.onAdventureDrop(adv)}
-                ondragover="return false"
-            >
-                <img class="adventure-image" alt="{adv.name}" src="{adv.imageUrl}" data-drag-consider="false"/>
-                <div class="adventure-text">{adv.name}</div>
-            </div>
-		{/each}
-	</div>
-
-	<div class="stack-container">
-		{#each $stacks as stack, i}
-		<div class="stack"
-            on:dragenter={game.onStackHoverEnter(i)} 
-            on:dragleave={game.onStackHoverExit(i)}  
-            on:drop={game.onStackDrop(i)}
-            ondragover="return false"
-        >
-			{#each stack as card(card.id)}
-				<div class="card" 
-                    in:receive={{ key: card.id }}
-                    out:send={{ key: card.id }}
-                    animate:flip="{{duration: flipDurationMs}}"
-                    draggable={game.playableBench.indexOf(card) > -1}
-                    on:dragstart={game.dragCard(card, i)}
-                    on:dragend={game.dropCard()}
-                    on:touchstart={game.dragCard(card, i)}
-                    on:touchend={game.dropCard()}
-                >
-					<img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
-				</div>
-			{/each}
-			<div class="card card-empty"> </div>
-		</div>
-		{/each}
-	</div>
+    <div class="money">{$moves} moves left</div>
 
     {:catch error}
       <p style="color: red">{error.message}</p>
@@ -196,6 +220,16 @@
     flex-wrap: nowrap;
     align-content: center;
     justify-content: space-evenly;
+    align-items: flex-start;
+}
+
+.game-container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: space-around;
+    justify-content: center;
     align-items: flex-start;
 }
 
@@ -216,7 +250,7 @@
     align-content: center;
     justify-content: flex-start;
     align-items: center;
-    min-width: 200px;
+    min-width: 18rem;
 
     background: #afaab833;
     border-radius: 10px;
@@ -229,34 +263,38 @@
 }
 
 .card.card-empty {
-    height: 12rem
+    height: 18rem
 }
 
 .card-image {
-    width: 200px;
+    width: 18rem;
     border-radius: 10px;
 }
 
 .adventure-container {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-content: center;
     justify-content: space-evenly;
     align-items: center;
-    min-width: 68rem;
     margin-bottom: 1rem;
+
+    width: 40rem;
+    min-width: 40rem;
+    padding: 2rem;
 }
 
 .adventure {
     display: inline-block;
     position: relative;
-    width: 16rem;
-    height: 9rem;
+    width: 48rem;
+    height: 27rem;
     background: grey;
     text-align: center;
     vertical-align: middle;
     color: white;
+    margin-bottom: 3rem;
 }
 
 .adventure-text {
@@ -264,14 +302,15 @@
     position: absolute;
 
     top: 0;
-    font-size: 1.5rem;
+    font-size: 2rem;
     text-align: center;
-    width: 16rem;
+    width: 40rem;
     background: #00000052;
+
 }
 
 .adventure-image {
-    width: 16rem;
+    width: 40rem;
     height: 100%;
     object-fit: cover;
     filter: grayscale(1);
@@ -282,6 +321,30 @@
 
 .adventure-image.adventure-image:not([data-drag-consider="false"]) {
     filter: grayscale(0);
+}
+
+.adventure-card-zone {
+    position: absolute;
+    right: 1rem;
+    top: 0rem;
+    bottom: 0rem;
+    margin: auto 0;
+    height: 18rem;
+    background: #808080ba;
+    border-radius: 12px;
+    border: 5px solid #0000008f;
+    width: 13rem;
+    pointer-events: none;
+}
+
+img.adventure-energy {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    height: 4rem;
 }
 
 .money {
@@ -331,7 +394,7 @@ img.gym-leader-portrait {
 }
 
 img.gym-party-card-image {
-    width: 180px;
+    width: 18rem;
     margin: .5rem;
 }
 
@@ -426,6 +489,16 @@ button.gym-start-button:hover {
 
 .battle-health-increment.battle-health-increment-filled {
     background: #53ef53;
+}
+
+img.inspect-card-image {
+    border-radius: 15px;
+    width: 30rem;
+}
+
+.inspect-container {
+    padding: 2rem;
+    min-width: 34rem;
 }
 
 </style>

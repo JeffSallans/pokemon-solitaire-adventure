@@ -5,6 +5,7 @@ export interface Adventure {
     id: string;
     name: string;
     imageUrl: string;
+    energyUrl: string;
     reward: number;
     /** True if the adventure should show as being considered for drop */
     consider: boolean;
