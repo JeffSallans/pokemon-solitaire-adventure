@@ -9,8 +9,6 @@ import { SolitaireBattle } from './solitaire-battle';
 import fightingImage from '$lib/images/energies/30px-Fighting-attack.png';
 import fireImage from '$lib/images/energies/30px-Fire-attack.png';
 import grassImage from '$lib/images/energies/30px-Grass-attack.png';
-import lightingImage from '$lib/images/energies/30px-Lighting-attack.png';
-import psychicImage from '$lib/images/energies/30px-Psychic-attack.png';
 import waterImage from '$lib/images/energies/30px-Water-attack.png';
 
 import mistyImage from '$lib/images/trainers/misty.png';
