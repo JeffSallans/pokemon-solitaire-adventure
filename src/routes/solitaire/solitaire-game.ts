@@ -115,24 +115,27 @@ export class SolitaireGame {
 		return (e: Event) => {
 			// Get cursor location
 			let touchLocation = e.targetTouches[0];
-			let pageX = Math.floor((touchLocation.pageX));
-			let pageY = Math.floor((touchLocation.pageY));
+			let pageX = Math.floor((touchLocation.pageX - 50));
+			let pageY = Math.floor((touchLocation.pageY - 50));
 
 			// Update hover over 
-			const stackIndex = this.getHoverOverStack(pageX, pageY, e.target);
-			if (this.targetStackIndex != stackIndex && stackIndex >= 0) {
-				this.onStackHoverEnter(stackIndex);
+			const stackIndex = this.getHoverOverStack(pageX, pageY);
+			if (this.draggingCardLastStackIndex == stackIndex) {
+				/* do nothing */
+			}
+			if (this.targetStackIndex != stackIndex && stackIndex != null) {
+				this.onStackHoverEnter(stackIndex)(e);
 			}
 			else if (this.targetStackIndex != stackIndex && stackIndex == null) {
-				this.onStackHoverExit(this.targetStackIndex);
+				this.onStackHoverExit(this.targetStackIndex)(e);
 			}
 
-			const adventure = this.getHoverOverAdventure(pageX, pageY, e.target);
+			const adventure = this.getHoverOverAdventure(pageX, pageY);
 			if (this.targetAdventure != adventure && adventure != null) {
-				this.onAdventureHoverEnter(adventure);
+				this.onAdventureHoverEnter(adventure)(e);
 			}
 			else if (this.targetAdventure != adventure && adventure == null) {
-				this.onAdventureHoverExit(this.targetAdventure);
+				this.onAdventureHoverExit(this.targetAdventure)(e);
 			}
 
 			// Update element to drag with touch
@@ -157,12 +160,12 @@ export class SolitaireGame {
 		};
 	}
 
-	onStackHoverExit(stackIndex: number) {
+	onStackHoverExit(stackIndex: number | null) {
 		return () => {
 			// Check if dragging
 			if (this.draggingCard == null) return;
 			// Check eligibility
-			if (get(this.moves) == 0 || stackIndex == this.draggingCardLastStackIndex) return;
+			if (get(this.moves) == 0) return;
 			
 			console.log('onStackHoverExit');
 	
@@ -197,7 +200,7 @@ export class SolitaireGame {
 		};
 	}
 
-	onAdventureHoverExit(adventure: Adventure) {
+	onAdventureHoverExit(adventure: Adventure | null) {
 		return (e: Event) => {
 			// Check if dragging
 			if (this.draggingCard == null) return;
@@ -298,8 +301,8 @@ export class SolitaireGame {
 	 * or null if you are not hovering over any stack
 	 */
 	getHoverOverAdventure(cursorX: number, cursorY: number): Adventure | null {
-		const selectedAdventureId = _.find(_.toPairs(this.adventureRefs), a => this.isCursorTouching(cursorX, cursorY, a.value));
-		const selectedAdventure = _.find(this.playableAdventures, a => a.id == selectedAdventureId?.key)
+		const selectedAdventureId = _.find(_.toPairs(this.adventureRefs), a => this.isCursorTouching(cursorX, cursorY, a[1])) || [];
+		const selectedAdventure = _.find(this.allAdventures, a => a.id == selectedAdventureId[0]) || null;
 		return selectedAdventure;
 	}
 
@@ -308,8 +311,9 @@ export class SolitaireGame {
 	 * or null if you are not hovering over any stack
 	 */
 	getHoverOverStack(cursorX: number, cursorY: number): number | null {
-		const selectedStack = _.find(_.toPairs(this.stackRefs), s => this.isCursorTouching(cursorX, cursorY, s.value));
-		return selectedStack?.key;
+		const selectedStack = _.find(_.toPairs(this.stackRefs), s => this.isCursorTouching(cursorX, cursorY, s[1])) || null;
+		if (selectedStack == null) return null;
+		return Number(selectedStack[0]);
 	}
 
 	/** Run an auto battler on the current gym leader and playable bench */
