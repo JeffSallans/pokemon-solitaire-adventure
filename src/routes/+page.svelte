@@ -58,6 +58,7 @@
                     in:fly={{y:-200}}
                     out:fade
                     animate:flip="{{duration: flipDurationMs}}"
+                    bind:this={game.adventureRefs[adv.id]}
                     on:dragenter={game.onAdventureHoverEnter(adv)} 
                     on:dragleave={game.onAdventureHoverExit(adv)}  
                     on:drop={game.onAdventureDrop(adv)}
@@ -98,8 +99,9 @@
             <div class="stack-container">
                 {#each $stacks as stack, i}
                 <div class="stack"
+                    bind:this={game.stackRefs[i]}
                     on:dragenter={game.onStackHoverEnter(i)} 
-                    on:dragleave={game.onStackHoverExit(i)}  
+                    on:dragleave={game.onStackHoverExit(i)}
                     on:drop={game.onStackDrop(i)}
                     ondragover="return false"
                 >
@@ -113,6 +115,7 @@
                             on:dragend={game.dropCard()}
                             on:touchstart={game.dragCard(card, i)}
                             on:touchend={game.dropCard()}
+                            on:touchmove={game.touchMove(card)}
                             on:mouseenter={game.onHover(card.cardDef)}
                             on:mouseleave={game.onHoverExit(card.cardDef)}
                         >

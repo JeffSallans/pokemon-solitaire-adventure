@@ -66,6 +66,9 @@ export class SolitaireGame {
 
 	focusCard: Writable<PokemonTCG.Card | null> = writable(null);
 
+	stackRefs = {};
+	adventureRefs = {};
+
 	// ----------------------
 	// --- Events -----------
 	// ----------------------
@@ -96,7 +99,7 @@ export class SolitaireGame {
 	}
 
 	dropCard() {
-		return () => {
+		return (e: Event) => {
 			console.log('dropCard');
 
 			if (this.targetStackIndex != null) this.onStackDrop(this.targetStackIndex);
@@ -107,8 +110,43 @@ export class SolitaireGame {
 		};
 	}
 
+	/** Touch is handled differently so move the card as the user dragging it */
+	touchMove() {
+		return (e: Event) => {
+			// Get cursor location
+			let touchLocation = e.targetTouches[0];
+			let pageX = Math.floor((touchLocation.pageX));
+			let pageY = Math.floor((touchLocation.pageY));
+
+			// Update hover over 
+			const stackIndex = this.getHoverOverStack(pageX, pageY, e.target);
+			if (this.targetStackIndex != stackIndex && stackIndex >= 0) {
+				this.onStackHoverEnter(stackIndex);
+			}
+			else if (this.targetStackIndex != stackIndex && stackIndex == null) {
+				this.onStackHoverExit(this.targetStackIndex);
+			}
+
+			const adventure = this.getHoverOverAdventure(pageX, pageY, e.target);
+			if (this.targetAdventure != adventure && adventure != null) {
+				this.onAdventureHoverEnter(adventure);
+			}
+			else if (this.targetAdventure != adventure && adventure == null) {
+				this.onAdventureHoverExit(this.targetAdventure);
+			}
+
+			// Update element to drag with touch
+			e.target.style.position = "absolute";
+			e.target.style.left = pageX + "px";
+			e.target.style.top = pageY + "px";
+	
+		};
+	}
+
 	onStackHoverEnter(stackIndex: number) {
 		return () => {
+			// Check if dragging
+			if (this.draggingCard == null) return;
 			// Check eligibility
 			if (get(this.moves) == 0 || stackIndex == this.draggingCardLastStackIndex) return;
 			
@@ -121,6 +159,8 @@ export class SolitaireGame {
 
 	onStackHoverExit(stackIndex: number) {
 		return () => {
+			// Check if dragging
+			if (this.draggingCard == null) return;
 			// Check eligibility
 			if (get(this.moves) == 0 || stackIndex == this.draggingCardLastStackIndex) return;
 			
@@ -142,6 +182,8 @@ export class SolitaireGame {
 
 	onAdventureHoverEnter(adventure: Adventure) {
 		return (e: Event) => {
+			// Check if dragging
+			if (this.draggingCard == null) return;
 			// Check eligibility
 			if (this.draggingCard.cardDef.supertype != "Trainer" &&
 				adventure.conditionEnergy.indexOf(this.draggingCard.cardDef.types[0]) == -1) return;
@@ -157,6 +199,9 @@ export class SolitaireGame {
 
 	onAdventureHoverExit(adventure: Adventure) {
 		return (e: Event) => {
+			// Check if dragging
+			if (this.draggingCard == null) return;
+
 			console.log('onAdventureHoverExit');
 
 			e.target.setAttribute('data-drag-consider', 'false');
@@ -183,6 +228,12 @@ export class SolitaireGame {
 	// --- Actions ----------
 	// ----------------------
 
+	/**
+	 * Moves the card from it's current stack to the given stackIndex
+	 * @modifies this.moves, this.stacks
+	 * @param card 
+	 * @param stackIndex 
+	 */
 	movePoke(card: SolitaireCard, stackIndex: number) {
 		// Check cost
 		if (get(this.moves) == 0 || stackIndex == this.draggingCardLastStackIndex) return;
@@ -227,6 +278,38 @@ export class SolitaireGame {
 			a[replaceIndex] = nextAdventure;
 			return a;
 		});
+	}
+
+	/** Returns true if the cursor is in the HTML container location */
+	isCursorTouching(cursorX: number, cursorY: number, dragContainer: HTMLBaseElement): boolean {
+		if (dragContainer == null) return false;
+		
+		//Very simple detection here
+    	if (cursorX - dragContainer.offsetLeft > dragContainer.offsetWidth) 
+      		return false;
+    	if (cursorY - dragContainer.offsetTop > dragContainer.offsetHeight) 
+      		return false;
+		
+		return true;
+    }
+
+	/** 
+	 * Return the number of the stack you are hovering over
+	 * or null if you are not hovering over any stack
+	 */
+	getHoverOverAdventure(cursorX: number, cursorY: number): Adventure | null {
+		const selectedAdventureId = _.find(_.toPairs(this.adventureRefs), a => this.isCursorTouching(cursorX, cursorY, a.value));
+		const selectedAdventure = _.find(this.playableAdventures, a => a.id == selectedAdventureId?.key)
+		return selectedAdventure;
+	}
+
+	/** 
+	 * Return the number of the stack you are hovering over
+	 * or null if you are not hovering over any stack
+	 */
+	getHoverOverStack(cursorX: number, cursorY: number): number | null {
+		const selectedStack = _.find(_.toPairs(this.stackRefs), s => this.isCursorTouching(cursorX, cursorY, s.value));
+		return selectedStack?.key;
 	}
 
 	/** Run an auto battler on the current gym leader and playable bench */
@@ -322,6 +405,13 @@ export class SolitaireGame {
 		this.targetAdventure = null;
 	}
 
+	/**
+	 * Triggers the start of the game 
+	 * @param packs 
+	 * @param mistyParty 
+	 * @param surgeParty 
+	 * @param blaineParty 
+	 */
 	setupGame(packs: PokemonTCG.Card[][], mistyParty: PokemonTCG.Card[], surgeParty: PokemonTCG.Card[], blaineParty: PokemonTCG.Card[]) {
 		console.log('Setting up game');
 
@@ -388,4 +478,6 @@ export class SolitaireGame {
 	toString() {
 		return '';
 	}
+
+
 }
