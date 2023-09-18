@@ -102,11 +102,25 @@ export class SolitaireGame {
 		return (e: Event) => {
 			console.log('dropCard');
 
-			if (this.targetStackIndex != null) this.onStackDrop(this.targetStackIndex);
-			else if (this.targetAdventure != null) this.onAdventureDrop(this.targetAdventure);
+			this.draggingCard = null;
+			this.draggingCardLastStackIndex = null;
+		};
+	}
+
+	touchDropCard() {
+		return (e: Event) => {
+			console.log('touchDropCard');
+
+			if (this.targetStackIndex != null) this.onStackDrop(this.targetStackIndex)(e);
+			else if (this.targetAdventure != null) this.onAdventureDrop(this.targetAdventure)();
 
 			this.draggingCard = null;
 			this.draggingCardLastStackIndex = null;
+
+			// Update element to drag with touch
+			e.target.style.position = "initial";
+			e.target.style.left = "0px";
+			e.target.style.top = "0px";
 		};
 	}
 
@@ -115,31 +129,33 @@ export class SolitaireGame {
 		return (e: Event) => {
 			// Get cursor location
 			let touchLocation = e.targetTouches[0];
-			let pageX = Math.floor((touchLocation.pageX - 50));
-			let pageY = Math.floor((touchLocation.pageY - 50));
+			let pageX = Math.floor(touchLocation.pageX);
+			let pageY = Math.floor(touchLocation.pageY);
 
 			// Update hover over 
 			const stackIndex = this.getHoverOverStack(pageX, pageY);
 			if (this.draggingCardLastStackIndex == stackIndex) {
 				/* do nothing */
 			}
-			if (this.targetStackIndex != stackIndex && stackIndex != null) {
-				this.onStackHoverEnter(stackIndex)(e);
-			}
 			else if (this.targetStackIndex != stackIndex && stackIndex == null) {
-				this.onStackHoverExit(this.targetStackIndex)(e);
+				this.onStackHoverExit(this.targetStackIndex)();
+			}
+			else if (this.targetStackIndex != stackIndex && stackIndex != null) {
+				this.onStackHoverEnter(stackIndex)();
 			}
 
 			const adventure = this.getHoverOverAdventure(pageX, pageY);
 			if (this.targetAdventure != adventure && adventure != null) {
-				this.onAdventureHoverEnter(adventure)(e);
+				const advRef = this.adventureRefs[adventure.id];
+				this.onAdventureHoverEnter(adventure)({ target: advRef });
 			}
 			else if (this.targetAdventure != adventure && adventure == null) {
-				this.onAdventureHoverExit(this.targetAdventure)(e);
+				const advRef = this.adventureRefs[this.targetAdventure.id];
+				this.onAdventureHoverExit(this.targetAdventure)({ target: advRef });
 			}
 
 			// Update element to drag with touch
-			e.target.style.position = "absolute";
+			e.target.style.position = "fixed";
 			e.target.style.left = pageX + "px";
 			e.target.style.top = pageY + "px";
 	
@@ -193,7 +209,7 @@ export class SolitaireGame {
 			
 			console.log('onAdventureHoverEnter');
 			
-			e.target.setAttribute('data-drag-consider', 'true');
+			if (e.target)  e.target.setAttribute('data-drag-consider', 'true');
 
 			// If eligible remove greyscale and set value
 			this.targetAdventure = adventure;
@@ -207,7 +223,7 @@ export class SolitaireGame {
 
 			console.log('onAdventureHoverExit');
 
-			e.target.setAttribute('data-drag-consider', 'false');
+			if (e.target) e.target.setAttribute('data-drag-consider', 'false');
 
 			// Add back greyscale and remove value
 			this.targetAdventure = null;
@@ -288,9 +304,9 @@ export class SolitaireGame {
 		if (dragContainer == null) return false;
 		
 		//Very simple detection here
-    	if (cursorX - dragContainer.offsetLeft > dragContainer.offsetWidth) 
+    	if (0 > cursorX - dragContainer.offsetLeft || cursorX - dragContainer.offsetLeft > dragContainer.offsetWidth) 
       		return false;
-    	if (cursorY - dragContainer.offsetTop > dragContainer.offsetHeight) 
+    	if (0 > cursorY - dragContainer.offsetTop || cursorY - dragContainer.offsetTop > dragContainer.offsetHeight) 
       		return false;
 		
 		return true;

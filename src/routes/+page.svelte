@@ -15,7 +15,6 @@
 	const { range } = lodash;
 
 	/** @type {import('./$types').PageData} */
-	export let data;
 
     let game = new SolitaireGame();
 
@@ -63,6 +62,7 @@
                     on:dragleave={game.onAdventureHoverExit(adv)}  
                     on:drop={game.onAdventureDrop(adv)}
                     ondragover="return false"
+                    data-drag-consider="false"
                 >
                     <img class="adventure-image" alt="{adv.name}" src="{adv.imageUrl}" data-drag-consider="false"/>
                     <div class="adventure-text">{adv.name}</div>
@@ -114,7 +114,7 @@
                             on:dragstart={game.dragCard(card, i)}
                             on:dragend={game.dropCard()}
                             on:touchstart={game.dragCard(card, i)}
-                            on:touchend={game.dropCard()}
+                            on:touchend={game.touchDropCard()}
                             on:touchmove={game.touchMove(card)}
                             on:mouseenter={game.onHover(card.cardDef)}
                             on:mouseleave={game.onHoverExit(card.cardDef)}
@@ -331,6 +331,10 @@
     transition-duration: 500ms;
 }
 
+.adventure:not([data-drag-consider="false"]) .adventure-image {
+    filter: grayscale(0);
+}
+
 .adventure-image.adventure-image:not([data-drag-consider="false"]) {
     filter: grayscale(0);
 }
@@ -408,6 +412,7 @@ img.gym-leader-portrait {
 img.gym-party-card-image {
     width: 18rem;
     margin: .5rem;
+    max-width: 28vw;
 }
 
 @property --myColor1 {
