@@ -1,15 +1,18 @@
 @import '@fontsource/fira-mono';
+@import url('https://fonts.googleapis.com/css2?family=Rowdies:wght@300;400;700&display=swap');
 
 :root {
-	--font-body: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-		Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	--font-body: 'Rowdies', 'Open Sans', 'Helvetica Neue', sans-serif;
 	--font-mono: 'Fira Mono', monospace;
-	--color-bg-0: rgb(202, 216, 228);
-	--color-bg-1: hsl(209, 36%, 86%);
-	--color-bg-2: hsl(224, 44%, 95%);
-	--color-theme-1: #ff3e00;
-	--color-theme-2: #4075a6;
-	--color-text: rgba(0, 0, 0, 0.7);
+	--color-bg-0: #2f1132;
+	--color-bg-1: #170c1b;
+	--color-bg-2: #170c1b;
+	--color-theme-1: #960eff;
+	--color-theme-1-dark: #6015e3;
+	--color-theme-2: #f9ea0c;
+	--color-theme-2-dark: #f9730c;
+	--color-text: #fff;
+	--color-text-button: rgba(0, 0, 0, 0.7);
 	--column-width: 42rem;
 	--column-margin-top: 4rem;
 	font-family: var(--font-body);
@@ -25,8 +28,8 @@ body {
 	background-size: 100vw 100vh;
 	background-image: radial-gradient(
 			50% 50% at 50% 50%,
-			rgba(255, 255, 255, 0.75) 0%,
-			rgba(255, 255, 255, 0) 100%
+			#2f1132bf 0%,
+			#2f1132bf 100%
 		),
 		linear-gradient(180deg, var(--color-bg-0) 0%, var(--color-bg-1) 15%, var(--color-bg-2) 50%);
 }
@@ -83,6 +86,7 @@ input,
 button {
 	font-size: inherit;
 	font-family: inherit;
+	color: var(--color-text-button);
 }
 
 button:focus:not(:focus-visible) {
