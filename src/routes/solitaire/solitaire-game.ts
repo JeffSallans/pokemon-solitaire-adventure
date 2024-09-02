@@ -20,7 +20,6 @@ import digletDigImage from '$lib/images/adventures/diglet-dig.png';
 import forestRescueImage from '$lib/images/adventures/forest-rescue.jpg';
 import sinkingShipImage from '$lib/images/adventures/sinking-ship.jpg';
 import type { BattleCard } from './models/battle-card';
-import { TCGPlayer } from 'pokemon-tcg-sdk-typescript/dist/sdk';
 
 
 /** Manages the game state of the pokemon solitaire game */
@@ -35,7 +34,7 @@ export class SolitaireGame {
 	defeatedGymLeaders: number;
 	
 	playableAdventures: Writable<Adventure[]> = writable([]);
-	currentGymLeader: Writeable<GymLeader> = writable(null);
+	currentGymLeader: Writable<GymLeader | null> = writable(null);
 	stacks: Writable<SolitaireCard[][]> = writable([]);
 	
 	public get playableBench(): SolitaireCard[] {
@@ -191,9 +190,11 @@ export class SolitaireGame {
 	}
 
 	onStackDrop(stackIndex: number) {
-		return (e) => {
+		return (e: Event) => {
 			e.preventDefault();
 			console.log('onStackDrop');
+
+			if (this.draggingCard == null) return;
 
 			this.movePoke(this.draggingCard, stackIndex);
 		};
@@ -202,7 +203,7 @@ export class SolitaireGame {
 	onAdventureHoverEnter(adventure: Adventure) {
 		return (e: Event) => {
 			// Check if dragging
-			if (this.draggingCard == null) return;
+			if (this.draggingCard == null || this.draggingCard.cardDef == null || this.draggingCard.cardDef.types == null) return;
 			// Check eligibility
 			if (this.draggingCard.cardDef.supertype != "Trainer" &&
 				adventure.conditionEnergy.indexOf(this.draggingCard.cardDef.types[0]) == -1) return;
@@ -233,6 +234,7 @@ export class SolitaireGame {
 	onAdventureDrop(adventure: Adventure) {
 		return () => {
 			console.log('onAdventureDrop');
+			if (this.draggingCard == null) return;
 
 			this.completeAdventureWithPoke(this.draggingCard, adventure);
 		};

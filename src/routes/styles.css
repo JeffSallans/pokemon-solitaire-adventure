@@ -110,3 +110,86 @@ button:focus:not(:focus-visible) {
 	width: 1px;
 	white-space: nowrap;
 }
+
+.psa--primary {
+    background: rgb(255 165 14);
+    background: linear-gradient(90deg, rgb(255 40 14) 0%, rgb(255 165 14) 100%);
+    font-size: x-large;
+    padding: 10px;
+    border-radius: 30px;
+    min-width: 7rem;
+    border: 0px;
+	margin-bottom: 1rem;
+}
+
+.psa--primary:hover {
+    background: rgb(177 71 12);
+    background: linear-gradient(90deg, rgb(170 10 44) 0%, rgb(177 71 12) 100%);
+}
+
+.psa--primary:active {
+    background: rgb(255 176 66);
+    background: linear-gradient(90deg, rgb(255 139 66) 0%, rgb(255 176 66) 100%);
+}
+
+.psa--secondary {
+    background: rgb(81,14,255);
+    background: linear-gradient(90deg, rgba(81,14,255,1) 0%, rgba(148,14,255,1) 100%);
+    font-size: x-large;
+    padding: 10px;
+    border-radius: 30px;
+    min-width: 7rem;
+    border: 0px;
+	margin-bottom: 1rem;
+}
+
+.psa--secondary:hover {
+    background: rgb(55,10,170);
+    background: linear-gradient(90deg, rgba(55,10,170,1) 0%, rgba(104,12,177,1) 100%);
+}
+
+.psa--secondary:active {
+    background: rgb(135,66,255);
+    background: linear-gradient(90deg, rgba(135,66,255,1) 0%, rgba(207,71,255,1) 100%);
+}
+
+/* ===== Game Page ===== */
+
+.home-container {
+    max-width: 800px;
+	width: 100vw;
+    position: relative;
+}
+
+.title {
+    text-align: center;
+    margin-top: 2rem;
+}
+.title > img {
+	height: 20rem;
+	margin-bottom: 3rem;
+}
+
+.tray-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.set-select-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+	justify-content: space-evenly;
+}
+.set-container {
+	width: 30%;
+}
+
+.tutorial-button {
+    position: absolute;
+    right: 4rem;
+    top: 14rem;
+}

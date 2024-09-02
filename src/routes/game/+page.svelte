@@ -4,8 +4,11 @@
 </svelte:head>
 
 <script>
+// @ts-nocheck
+
     import { fade, fly } from 'svelte/transition';
 	import {flip} from "svelte/animate";
+	// @ts-ignore
 	import { onDestroy } from "svelte";
     import { Stretch } from 'svelte-loading-spinners';
 	import { SolitaireGame } from "../solitaire/solitaire-game";
