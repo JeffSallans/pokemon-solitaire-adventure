@@ -153,6 +153,12 @@ button:focus:not(:focus-visible) {
     background: linear-gradient(90deg, rgba(135,66,255,1) 0%, rgba(207,71,255,1) 100%);
 }
 
+button.psa--image {
+    padding: 0;
+    background: none;
+    border: none;
+}
+
 /* ===== Game Page ===== */
 
 .home-container {

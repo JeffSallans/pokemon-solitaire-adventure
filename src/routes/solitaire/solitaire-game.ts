@@ -72,93 +72,73 @@ export class SolitaireGame {
 	// --- Events -----------
 	// ----------------------
 
-	onHover(card: PokemonTCG.Card) {
+	/**
+	 * Set card as "Dragging" and "Focus"
+	 */
+	onCardClick(card: SolitaireCard, currentStack: number) {
 		return () => {
-			console.log('onHover');
-			this.focusCard.set(card);
-		};
-	}
-
-	onHoverExit(card: PokemonTCG.Card) {
-		return () => {
-			console.log('onHoverExit');
-			this.focusCard.set(null);
-		};
-	}
-
-	/** Sets the drag for the card */
-	dragCard(card: SolitaireCard, currentStack: number) {
-		return () => {
+			console.log('onClick');
 			if (this.playableBench.indexOf(card) == -1) return;
 
-			console.log('dragCard');
+			// Remove active card if another one was active
+			if (get(this.focusCard) != null || this.draggingCard != null || this.draggingCardLastStackIndex != null) {
+				// Remove focus and drag state
+				this.focusCard.set(null);
+				this.draggingCard = null;
+				this.draggingCardLastStackIndex = null;
+			}
+
 			this.draggingCard = card;
 			this.draggingCardLastStackIndex = currentStack;
+
+			this.focusCard.set(card.cardDef);
 		};
 	}
 
-	dropCard() {
+	onStackClick(stackIndex: number) {
 		return (e: Event) => {
-			console.log('dropCard');
+			console.log('onClickStack');
 
+			// Check if dragging
+			if (this.draggingCardLastStackIndex == null || this.draggingCard == null || this.draggingCard.cardDef == null) return;
+
+			// If a new stack move card to new stack
+			if (stackIndex != this.draggingCardLastStackIndex) {
+				e.preventDefault();
+				if (this.draggingCard == null) return;
+
+				this.movePoke(this.draggingCard, stackIndex);
+			}
+			// If original stack cancel the card dragging
+			else {
+				// Do nothing
+			}
+
+			// Remove focus and drag state
+			this.focusCard.set(null);
 			this.draggingCard = null;
 			this.draggingCardLastStackIndex = null;
-		};
+		}
 	}
 
-	touchDropCard() {
+	onAdventureClick(adventure: Adventure) {
 		return (e: Event) => {
-			console.log('touchDropCard');
+			console.log('onClickAdventure');
 
-			if (this.targetStackIndex != null) this.onStackDrop(this.targetStackIndex)(e);
-			else if (this.targetAdventure != null) this.onAdventureDrop(this.targetAdventure)();
+			// Check if dragging
+			if (this.draggingCard == null || this.draggingCard.cardDef == null) return;
+			// Check eligibility
+			if (this.draggingCard.cardDef.supertype != "Trainer" && this.draggingCard.cardDef.types != null &&
+				adventure.conditionEnergy.indexOf(this.draggingCard.cardDef.types[0]) == -1) return;
 
+			// Complete the adventure
+			this.completeAdventureWithPoke(this.draggingCard, adventure);
+
+			// Remove focus and drag state
+			this.focusCard.set(null);
 			this.draggingCard = null;
 			this.draggingCardLastStackIndex = null;
-
-			// Update element to drag with touch
-			e.target.style.position = "initial";
-			e.target.style.left = "0px";
-			e.target.style.top = "0px";
-		};
-	}
-
-	/** Touch is handled differently so move the card as the user dragging it */
-	touchMove() {
-		return (e: Event) => {
-			// Get cursor location
-			let touchLocation = e.targetTouches[0];
-			let pageX = Math.floor(touchLocation.pageX);
-			let pageY = Math.floor(touchLocation.pageY);
-
-			// Update hover over 
-			const stackIndex = this.getHoverOverStack(pageX, pageY);
-			if (this.draggingCardLastStackIndex == stackIndex) {
-				/* do nothing */
-			}
-			else if (this.targetStackIndex != stackIndex && stackIndex == null) {
-				this.onStackHoverExit(this.targetStackIndex)();
-			}
-			else if (this.targetStackIndex != stackIndex && stackIndex != null) {
-				this.onStackHoverEnter(stackIndex)();
-			}
-
-			const adventure = this.getHoverOverAdventure(pageX, pageY);
-			if (this.targetAdventure != adventure && adventure != null) {
-				const advRef = this.adventureRefs[adventure.id];
-				this.onAdventureHoverEnter(adventure)({ target: advRef });
-			}
-			else if (this.targetAdventure != adventure && adventure == null) {
-				const advRef = this.adventureRefs[this.targetAdventure.id];
-				this.onAdventureHoverExit(this.targetAdventure)({ target: advRef });
-			}
-
-			// Update element to drag with touch
-			e.target.style.position = "fixed";
-			e.target.style.left = pageX + "px";
-			e.target.style.top = pageY + "px";
-	
-		};
+		}
 	}
 
 	onStackHoverEnter(stackIndex: number) {

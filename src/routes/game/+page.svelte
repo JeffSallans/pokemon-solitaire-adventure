@@ -11,9 +11,10 @@
 	// @ts-ignore
 	import { onDestroy } from "svelte";
     import { Stretch } from 'svelte-loading-spinners';
+    import iconImage from '$lib/images/icon.png';
 	import { SolitaireGame } from "../solitaire/solitaire-game";
     import { send, receive } from '../solitaire/animation-transition';
-	import lodash from 'lodash';
+	import lodash, { indexOf } from 'lodash';
 	const { range } = lodash;
 
 	/** @type {import('./$types').PageData} */
@@ -44,6 +45,10 @@
 
 
 <div>
+    <div class="title-container">
+        <img class="title-icon" alt="pokemon-solitaire-adventure" src="{iconImage}"/>
+        <div class="title-moves money">{$moves} moves left</div>
+    </div>
     {#await fetchData()}
         <div class="spinner-container">
             <div class="spinner-container-goal">
@@ -53,28 +58,6 @@
         </div>
     {:then result}
     <div class="game-container">
-        <div class="adventure-container">
-            {#each $playableAdventures as adv(adv.id)}
-                <div class="adventure"
-                    in:fly={{y:-200}}
-                    out:fade
-                    animate:flip="{{duration: flipDurationMs}}"
-                    bind:this={game.adventureRefs[adv.id]}
-                    on:dragenter={game.onAdventureHoverEnter(adv)} 
-                    on:dragleave={game.onAdventureHoverExit(adv)}  
-                    on:drop={game.onAdventureDrop(adv)}
-                    ondragover="return false"
-                    data-drag-consider="false"
-                >
-                    <img class="adventure-image" alt="{adv.name}" src="{adv.imageUrl}" data-drag-consider="false"/>
-                    <div class="adventure-text">{adv.name}</div>
-
-                    <div class="adventure-card-zone">
-                        <img class="adventure-energy" alt="energy" src="{adv.energyUrl}"/>
-                    </div>
-                </div>
-            {/each}
-        </div>
 
         <div class="main-container">
             <div class="gym">
@@ -102,29 +85,28 @@
                 {#each $stacks as stack, i}
                 <div class="stack"
                     bind:this={game.stackRefs[i]}
-                    on:dragenter={game.onStackHoverEnter(i)} 
-                    on:dragleave={game.onStackHoverExit(i)}
-                    on:drop={game.onStackDrop(i)}
-                    ondragover="return false"
                 >
                     {#each stack as card(card.id)}
                         <div class="card" 
                             in:receive={{ key: card.id }}
                             out:send={{ key: card.id }}
                             animate:flip="{{duration: flipDurationMs}}"
-                            draggable={game.playableBench.indexOf(card) > -1}
-                            on:dragstart={game.dragCard(card, i)}
-                            on:dragend={game.dropCard()}
-                            on:touchstart={game.dragCard(card, i)}
-                            on:touchend={game.touchDropCard()}
-                            on:touchmove={game.touchMove(card)}
-                            on:mouseenter={game.onHover(card.cardDef)}
-                            on:mouseleave={game.onHoverExit(card.cardDef)}
                         >
-                            <img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
+                            {#if $focusCard == null && indexOf(stack, card) == stack.length - 1}
+                                <button class="psa--image" on:click={game.onCardClick(card, i)}>
+                                    <img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
+                                </button>
+                            {:else}
+                                <img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
+                            {/if}
                         </div>
                     {/each}
                     <div class="card card-empty"> </div>
+                    {#if $focusCard != null && game.draggingCardLastStackIndex == i}
+                        <button class="psa--secondary" on:click={game.onStackClick(i)}>Back</button>
+                    {:else if $focusCard != null}
+                        <button class="psa--secondary" on:click={game.onStackClick(i)}>Move</button>
+                    {/if}
                 </div>
                 {/each}
             </div>
@@ -140,6 +122,27 @@
             </div>
             {/key}
             {/if}
+        </div>
+
+        <div class="adventure-container">
+            {#each $playableAdventures as adv(adv.id)}
+                <div class="adventure"
+                    in:fly={{y:-200}}
+                    out:fade
+                    animate:flip="{{duration: flipDurationMs}}"
+                    bind:this={game.adventureRefs[adv.id]}
+                >
+                    <img class="adventure-image" alt="{adv.name}" src="{adv.imageUrl}" data-drag-consider="false"/>
+                    <div class="adventure-text">{adv.name}</div>
+
+                    <div class="adventure-card-zone">
+                        <img class="adventure-energy" alt="energy" src="{adv.energyUrl}"/>
+                    </div>
+                    {#if $focusCard != null}
+                        <button class="psa--secondary" on:click={game.onAdventureClick(adv)}>Use</button>
+                    {/if}
+                </div>
+            {/each}
         </div>
     </div>
 
@@ -212,8 +215,6 @@
         <div class="battle-lose"></div>
     </div>
     {/if}
-
-    <div class="money">{$moves} moves left</div>
 
     {:catch error}
       <p style="color: red">{error.message}</p>
@@ -364,9 +365,29 @@ img.adventure-energy {
     height: 4rem;
 }
 
-.money {
-    position: fixed;
-    bottom: 0;
+.title-container {
+    display: flex;
+    height: 15rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+img.title-icon {
+    height: 15rem;
+    width: 15rem;
+}
+
+.title-moves {
+    height: 15rem;
+    width: calc(100% - 22rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
     background: rgb(2,0,36);
     background: linear-gradient(8deg, rgba(2,0,36,1) 0%, rgba(9,38,121,1) 51%, rgba(2,143,222,1) 92%, rgba(0,177,255,1) 100%);
     
@@ -380,7 +401,6 @@ img.adventure-energy {
     text-align: center;
     font-size: 3rem;
     border-radius: 12px;
-
 }
 
 .gym {
