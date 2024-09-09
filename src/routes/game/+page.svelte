@@ -14,8 +14,8 @@
     import iconImage from '$lib/images/icon.png';
 	import { SolitaireGame } from "../solitaire/solitaire-game";
     import { send, receive } from '../solitaire/animation-transition';
-	import lodash, { indexOf } from 'lodash';
-	const { range } = lodash;
+	import lodash from 'lodash';
+	const { range, indexOf } = lodash;
 
 	/** @type {import('./$types').PageData} */
 
