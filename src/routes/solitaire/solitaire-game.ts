@@ -141,6 +141,21 @@ export class SolitaireGame {
 		}
 	}
 
+	/**
+	 * Returns true if the given adventure is eligible
+	 * @param adventure the adventure to check
+	 * @returns boolean if adventure is eligible
+	 */
+	isAdventureEligible(adventure: Adventure): boolean {
+		// Check if dragging
+		if (this.draggingCard == null || this.draggingCard.cardDef == null) return false;
+
+		// Check eligibility
+		const eligible = this.draggingCard.cardDef.supertype == "Trainer" || this.draggingCard.cardDef.types == null ||
+						adventure.conditionEnergy.indexOf(this.draggingCard.cardDef.types[0]) != -1;
+		return eligible;
+	}
+
 	onStackHoverEnter(stackIndex: number) {
 		return () => {
 			// Check if dragging

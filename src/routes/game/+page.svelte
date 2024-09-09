@@ -63,7 +63,7 @@
             <div class="gym">
                 <div class="gym-leader-container">
                     <img class="gym-leader-portrait" alt="{$currentGymLeader.name}" src="{$currentGymLeader.imageUrl}"/>
-                    <button class="gym-start-button" on:click={(e) => game.startBattle()}>Battle</button>
+                    <button class="psa--secondary gym-start-button" on:click={(e) => game.startBattle()}>Battle</button>
                     <div class="gym-start-cost">Cost 1 Move</div>
                 </div>
                 <div class="gym-party-container">
@@ -72,8 +72,6 @@
                             in:fly={{ y: -300 }}
                             out:fade
                             animate:flip="{{duration: flipDurationMs}}"
-                            on:mouseenter={game.onHover(card)}
-                            on:mouseleave={game.onHoverExit(card)}
                         >
                             <img class="gym-party-card-image" alt="{card.name}" src="{card.images.small}"/>
                         </div>
@@ -92,13 +90,7 @@
                             out:send={{ key: card.id }}
                             animate:flip="{{duration: flipDurationMs}}"
                         >
-                            {#if $focusCard == null && indexOf(stack, card) == stack.length - 1}
-                                <button class="psa--image" on:click={game.onCardClick(card, i)}>
-                                    <img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
-                                </button>
-                            {:else}
-                                <img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
-                            {/if}
+                            <img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
                         </div>
                     {/each}
                     <div class="card card-empty"> </div>
@@ -106,6 +98,8 @@
                         <button class="psa--secondary" on:click={game.onStackClick(i)}>Back</button>
                     {:else if $focusCard != null}
                         <button class="psa--secondary" on:click={game.onStackClick(i)}>Move</button>
+                    {:else if $focusCard == null}
+                        <button class="psa--secondary" on:click={game.onCardClick(stack[stack.length - 1], i)}>Select</button>
                     {/if}
                 </div>
                 {/each}
@@ -138,8 +132,8 @@
                     <div class="adventure-card-zone">
                         <img class="adventure-energy" alt="energy" src="{adv.energyUrl}"/>
                     </div>
-                    {#if $focusCard != null}
-                        <button class="psa--secondary" on:click={game.onAdventureClick(adv)}>Use</button>
+                    {#if $focusCard != null && game.isAdventureEligible(adv)}
+                        <button class="psa--secondary adventure-button" on:click={game.onAdventureClick(adv)}>Use</button>
                     {/if}
                 </div>
             {/each}
@@ -323,6 +317,19 @@
 
 }
 
+.adventure-button.adventure-button {
+    position: absolute;
+    height: 7rem;
+    width: fit-content;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
 .adventure-image {
     width: 40rem;
     height: 100%;
@@ -461,21 +468,9 @@ img.gym-party-card-image {
 }
 
 button.gym-start-button {
-    width: 12rem;
-    height: 3rem;
-    background: rgb(36,4,0);
-    background: linear-gradient(8deg, var(--myColor1) 0%, var(--myColor2) 51%, var(--myColor3) 92%, var(--myColor4) 100%);
-    color: #ebcccc;
-    font-weight: bold;
-    transition: --myColor1, --myColor2, --myColor3, --myColor4;
-    transition-duration: 500ms;
-}
-
-button.gym-start-button:hover {
-    --myColor1: rgba(36,4,0,1);
-    --myColor2: rgba(180,50,5,1);
-    --myColor3: rgba(245,144,1,1);
-    --myColor4: rgba(255,175,0,1);
+    font-size: medium;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .gym-start-cost {
