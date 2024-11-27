@@ -19,19 +19,46 @@
 
     const TcgSets = [
         { id: 'base1', url: baseUrl },
-        { id: 'jungle', url: jungleUrl }
+        { id: 'base2', url: jungleUrl }
     ];
 
     let offset = 0;
 
     let playableTcgSets = [
-        { id: null },
+        { id: null, url: null },
         TcgSets[0],
         TcgSets[1],
     ];
 
-    function updatePlayableTcgSets(newOffset) {
+    /**
+	 * Returns the new value for playableTcgSets based on the given offset
+     * @param {number} newOffset
+	 */
+    function calculateNewPlayableTcgSets(newOffset) {
+        // Base case
+        if (newOffset == 0) {
+            return [
+                { id: null, url: null },
+                TcgSets[newOffset],
+                TcgSets[newOffset + 1],
+            ];
+        }
 
+        // End case
+        if (newOffset == TcgSets.length - 1) {
+            return [
+                TcgSets[newOffset - 1],
+                TcgSets[newOffset],
+                { id: null, url: null },
+            ];
+        }
+
+        // Offset calculated
+        return [
+            TcgSets[newOffset - 1],
+            TcgSets[newOffset],
+            TcgSets[newOffset + 1],
+        ];
     }
 
     function tutorial() {
@@ -41,18 +68,18 @@
     function prev() {
         if (offset <= 0) return;
         offset--;
-        updatePlayableTcgSets(offset);       
+        playableTcgSets = calculateNewPlayableTcgSets(offset);       
     }
 
     function play() {
         const activeSet = TcgSets[offset];
-        goto(`/game?set=${activeSet.id}`);
+        goto(`/game?cardSet=${activeSet.id}`);
     }
 
     function next() {
         if (offset == TcgSets.length - 1) return;
         offset++;
-        updatePlayableTcgSets(offset);
+        playableTcgSets = calculateNewPlayableTcgSets(offset);
     }
 
 

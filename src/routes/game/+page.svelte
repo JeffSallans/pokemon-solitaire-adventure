@@ -27,7 +27,8 @@
     const flipDurationMs = 100;
 
     async function fetchData() {
-        const packsRes = await fetch("/pack");
+        const cardSet = (new URLSearchParams(window.location.search)).get('cardSet');
+        const packsRes = await fetch(`/pack?cardSet=${cardSet}`);
         const packs = await packsRes.json();
         const gymLeaderRes = await fetch("/leaders");
         const gymLeader = await gymLeaderRes.json();
