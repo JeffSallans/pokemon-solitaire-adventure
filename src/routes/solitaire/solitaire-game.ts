@@ -63,10 +63,28 @@ export class SolitaireGame {
 
 	moves = writable(0);
 
-	focusCard: Writable<PokemonTCG.Card | null> = writable(null);
+	focusCard: Writable<SolitaireCard | null> = writable(null);
 
 	stackRefs = {};
 	adventureRefs = {};
+
+	// ----------------------
+	// --- Helper -----------
+	// ----------------------
+
+	convertToSolitaireCard(card: PokemonTCG.Card): SolitaireCard {
+		return {
+			id: _.uniqueId('card'),
+			isNewToCollection: true,
+			attack: (_.max(
+				_.map(card.attacks, (a) => Number.parseInt(a.damage) || 0)
+			) || 0) / 10,
+			maxHealth: Number.parseInt(card.hp || '100') / 10,
+			weakness: _.get(card.weaknesses, '[0].type', undefined),
+			type: _.get(card.types, '[0]', PokemonTCG.Type.Colorless),
+			cardDef: card
+		};
+	}
 
 	// ----------------------
 	// --- Events -----------
@@ -91,7 +109,7 @@ export class SolitaireGame {
 			this.draggingCard = card;
 			this.draggingCardLastStackIndex = currentStack;
 
-			this.focusCard.set(card.cardDef);
+			this.focusCard.set(card);
 		};
 	}
 
@@ -338,13 +356,7 @@ export class SolitaireGame {
 		this.moves.update((n) => n - 1);
 
 		// Setup gym leader
-		const opponentParty: SolitaireCard[] = _.map(get(this.currentGymLeader).party, (c) => {
-			return {
-				id: _.uniqueId('card'),
-				isNewToCollection: false,
-				cardDef: c
-			};
-		})
+		const opponentParty: SolitaireCard[] = get(this.currentGymLeader)?.party || [];
 
 		// Trigger auto battler
 		const playablePokemon = _.filter(this.playableBench, card => card.cardDef.supertype == 'Pokémon');
@@ -382,11 +394,9 @@ export class SolitaireGame {
 			let i = 0;
 			for (const card of shuffledPack) {
 				this.stacks.update(s => {
-					(s[i + minIndex] as SolitaireCard[]).push({
-						id: _.uniqueId('card'),
-						isNewToCollection: true,
-						cardDef: card
-					});
+					(s[i + minIndex] as SolitaireCard[]).push(
+						this.convertToSolitaireCard(card)
+					);
 					return s;
 				});
 				i = (i + 1) % indexRange;
@@ -448,9 +458,9 @@ export class SolitaireGame {
 		];
 
 		this.allGymLeaders = [
-			{ name: 'Misty', imageUrl: mistyImage, tier: 1, party: mistyParty},
-			{ name: 'Surge', imageUrl: surgeImage, tier: 1, party: surgeParty},
-			{ name: 'Blaine', imageUrl: blaineImage, tier: 1, party: blaineParty}
+			{ name: 'Misty', imageUrl: mistyImage, tier: 1, party: _.map(mistyParty, c => this.convertToSolitaireCard(c)) },
+			{ name: 'Surge', imageUrl: surgeImage, tier: 1, party: _.map(surgeParty, c => this.convertToSolitaireCard(c))},
+			{ name: 'Blaine', imageUrl: blaineImage, tier: 1, party: _.map(blaineParty, c => this.convertToSolitaireCard(c))}
 		];
 
 		this.allAdventures = _.shuffle(this.allAdventures);
@@ -469,11 +479,7 @@ export class SolitaireGame {
 
 		const openPack: SolitaireCard[] = [];
 		for (const card of shuffledPack) {
-			openPack.push({
-				id: _.uniqueId('card'),
-				isNewToCollection: true,
-				cardDef: card
-			})
+			openPack.push(this.convertToSolitaireCard(card))
 		}
 
 		this.stacks.set([

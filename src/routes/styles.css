@@ -159,6 +159,97 @@ button.psa--image {
     border: none;
 }
 
+/* ===== Card ===== */
+
+.psa--card {
+    height: 5rem;
+    position: relative;
+}
+
+.psa--card.card-empty {
+    height: 20rem;
+	margin-bottom: 1rem;
+}
+
+.psa--card .psa--card-image {
+    width: 18rem;
+    border-radius: 10px;
+}
+
+.psa--card .psa--card-cover {
+    position: absolute;
+    top: 90px;
+    height: 75px;
+    width: 100%;
+    border-radius: 9px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: medium;
+    color: black;
+}
+
+/* ===== Element Type Color Variants ===== */
+
+.psa--background-Colorless {
+	background: rgb(141,144,149);
+	background: linear-gradient(27deg, rgba(141,144,149,1) 0%, rgba(216,203,194,1) 100%);
+}
+
+.psa--background-Grass {
+	background: rgb(74,227,21);
+	background: linear-gradient(27deg, rgba(74,227,21,1) 0%, rgba(193,227,21,1) 100%);
+}
+
+.psa--background-Water {
+	background: rgb(60,111,247);
+	background: linear-gradient(27deg, rgba(60,111,247,1) 0%, rgba(12,195,249,1) 100%);
+}
+
+.psa--background-Fire {
+	background: rgb(243,126,71);
+	background: linear-gradient(27deg, rgba(243,126,71,1) 0%, rgba(250,170,129,1) 100%);
+}
+
+.psa--background-Psychic {
+	background: rgb(150,100,174);
+	background: linear-gradient(27deg, rgba(150,100,174,1) 0%, rgba(171,155,215,1) 100%);
+}
+
+.psa--background-Lightning {
+	background: rgb(224,199,34);
+	background: linear-gradient(27deg, rgba(224,199,34,1) 0%, rgba(241,230,107,1) 100%);
+}
+
+.psa--background-Fighting {
+	background: rgb(176,123,63);
+	background: linear-gradient(27deg, rgba(176,123,63,1) 0%, rgba(209,161,126,1) 100%);
+}
+
+.psa--background-Dark {
+	background: rgb(141,144,149);
+	background: linear-gradient(27deg, rgba(141,144,149,1) 0%, rgba(216,203,194,1) 100%);
+}
+
+.psa--background-Dragon {
+	background: rgb(141,144,149);
+	background: linear-gradient(27deg, rgba(141,144,149,1) 0%, rgba(216,203,194,1) 100%);
+}
+
+.psa--background-Fairy {
+	background: rgb(141,144,149);
+	background: linear-gradient(27deg, rgba(141,144,149,1) 0%, rgba(216,203,194,1) 100%);
+}
+
+.psa--background-Trainer {
+	background: rgb(141,144,149);
+	background: linear-gradient(27deg, rgba(141,144,149,1) 0%, rgba(216,203,194,1) 100%);
+}
+
+
 /* ===== Game Page ===== */
 
 .home-container {

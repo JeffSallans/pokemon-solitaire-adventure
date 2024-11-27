@@ -64,20 +64,28 @@
             <div class="gym">
                 <div class="gym-leader-container">
                     <img class="gym-leader-portrait" alt="{$currentGymLeader.name}" src="{$currentGymLeader.imageUrl}"/>
-                    <button class="psa--secondary gym-start-button" on:click={(e) => game.startBattle()}>Battle</button>
-                    <div class="gym-start-cost">Cost 1 Move</div>
                 </div>
                 <div class="gym-party-container">
                     {#each $currentGymLeader.party as card(card.id)}
-                        <div class="gym-party-card" 
+                        <div class="gym-party-card psa--card" 
                             in:fly={{ y: -300 }}
                             out:fade
                             animate:flip="{{duration: flipDurationMs}}"
                         >
-                            <img class="gym-party-card-image" alt="{card.name}" src="{card.images.small}"/>
+                            <img class="gym-party-card-image psa--card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
+                            <div class="psa--card-cover psa--background-{card.type}">
+                                <div class="card-attack">{card.attack}A</div>
+                                <div class="card-health">{card.maxHealth}H</div>
+                            </div>
                         </div>
                     {/each}
                 </div>
+            </div>
+            <div class="battle-button-container">
+                <button class="psa--primary gym-start-button" on:click={(e) => game.startBattle()}>
+                    Battle
+                    <div class="gym-start-cost">Cost 1 Move</div>
+                </button>
             </div>
         
             <div class="stack-container">
@@ -86,15 +94,19 @@
                     bind:this={game.stackRefs[i]}
                 >
                     {#each stack as card(card.id)}
-                        <div class="card" 
+                        <div class="psa--card" 
                             in:receive={{ key: card.id }}
                             out:send={{ key: card.id }}
                             animate:flip="{{duration: flipDurationMs}}"
                         >
-                            <img class="card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
+                            <img class="psa--card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
+                            <div class="psa--card-cover psa--background-{card.type}">
+                                <div class="card-attack">{card.attack}A</div>
+                                <div class="card-health">{card.maxHealth}H</div>
+                            </div>
                         </div>
                     {/each}
-                    <div class="card card-empty"> </div>
+                    <div class="psa--card card-empty"> </div>
                     {#if $focusCard != null && game.draggingCardLastStackIndex == i}
                         <button class="psa--secondary" on:click={game.onStackClick(i)}>Back</button>
                     {:else if $focusCard != null}
@@ -110,10 +122,14 @@
         <div class="inspect-container">
             {#if $focusCard != null}
             {#key $focusCard.id}
-            <div class="inspect-card"
+            <div class="psa--card inspect-card"
                 in:fade
             >
-                <img class="inspect-card-image" alt={$focusCard.name} src={$focusCard.images.large} />
+                <img class="psa--card-image" alt={$focusCard.cardDef.name} src={$focusCard.cardDef.images.large} />
+                <div class="psa--card-cover psa--background-{$focusCard.type}">
+                    <div class="card-attack">{$focusCard.attack}A</div>
+                    <div class="card-health">{$focusCard.maxHealth}H</div>
+                </div>
             </div>
             {/key}
             {/if}
@@ -152,11 +168,15 @@
             <div class="battle-my-card">
                 <!-- Card -->
                 {#key $activePlayer.id}
-                    <div class="battle-card" 
+                    <div class="psa--card battle-card" 
                         in:fly={{x:-100}}
                         out:fade
                     >
-                        <img class="battle-card-image" alt="{$activePlayer.cardInfo.cardDef.name}" src="{$activePlayer.cardInfo.cardDef.images.small}"/>
+                        <img class="psa--card-image battle-card-image" alt="{$activePlayer.cardInfo.cardDef.name}" src="{$activePlayer.cardInfo.cardDef.images.small}"/>
+                        <div class="psa--card-cover psa--background-{$activePlayer.cardInfo.type}">
+                            <div class="card-attack">{$activePlayer.cardInfo.attack}A</div>
+                            <div class="card-health">{$activePlayer.cardInfo.maxHealth}H</div>
+                        </div>
                     </div>
                 {/key}
                 <!-- Health Counters -->
@@ -180,11 +200,15 @@
             <div class="battle-opp-card">
                 <!-- Card -->
                 {#key $activeOpponent.id}
-                    <div class="battle-card" 
+                    <div class="psa--card battle-card" 
                         in:fly={{x:-100}}
                         out:fade
                     >
-                        <img class="battle-card-image" alt="{$activeOpponent.cardInfo.cardDef.name}" src="{$activeOpponent.cardInfo.cardDef.images.small}"/>
+                        <img class="psa--card-image battle-card-image" alt="{$activeOpponent.cardInfo.cardDef.name}" src="{$activeOpponent.cardInfo.cardDef.images.small}"/>
+                        <div class="psa--card-cover psa--background-{$activeOpponent.cardInfo.type}">
+                            <div class="card-attack">{$activeOpponent.cardInfo.attack}A</div>
+                            <div class="card-health">{$activeOpponent.cardInfo.maxHealth}H</div>
+                        </div>
                     </div>
                 {/key}
                 <!-- Health Counters -->
@@ -265,19 +289,6 @@
     border-radius: 10px;
     margin: 5px;
     padding: 1rem;
-}
-
-.card {
-    height: 5rem;
-}
-
-.card.card-empty {
-    height: 20rem
-}
-
-.card-image {
-    width: 18rem;
-    border-radius: 10px;
 }
 
 .adventure-container {
@@ -417,10 +428,13 @@ img.title-icon {
     flex-wrap: nowrap;
     align-items: center;
     justify-content: flex-start;
+    margin-bottom: 1rem;
 }
 
 .gym-party-card {
     display: inline-block;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
     /* height: 5rem; */
 }
 
@@ -440,7 +454,6 @@ img.gym-leader-portrait {
 
 img.gym-party-card-image {
     width: 18rem;
-    margin: .5rem;
     max-width: 28vw;
 }
 
@@ -468,14 +481,26 @@ img.gym-party-card-image {
   inherits: false;
 }
 
-button.gym-start-button {
-    font-size: medium;
-    padding-top: 2px;
-    padding-bottom: 2px;
+.battle-button-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: stretch;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
-.gym-start-cost {
-    text-align: center;
+.battle-button-container button.gym-start-button {
+    height: 10rem;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-radius: 15px;
+    font-size: x-large;
+}
+
+.battle-button-container .gym-start-cost {
+    font-size: large;
 }
 
 .battle-container {
@@ -525,14 +550,33 @@ button.gym-start-button {
     background: #53ef53;
 }
 
-img.inspect-card-image {
-    border-radius: 15px;
-    width: 30rem;
+.inspect-container {
+    padding: 2rem;
+    width: 100%;
+    max-width: 60rem;
+}
+
+.psa--card.inspect-card {
+    width: 60vw;
+}
+
+.psa--card.inspect-card .psa--card-image {
+    width: 100%;
+}
+
+.psa--card.inspect-card .psa--card-cover {
+    top: 36rem;
+    height: 33rem;
+    font-size: xx-large;
 }
 
 .inspect-container {
-    padding: 2rem;
-    min-width: 34rem;
+    min-width: 60vw;
+}
+
+.inspect-container .psa--card-cover {
+    top: 36rem;
+    height: 33rem;
 }
 
 </style>

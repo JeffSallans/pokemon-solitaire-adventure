@@ -1,5 +1,6 @@
-import { PokemonTCG } from 'pokemon-tcg-sdk-typescript';
+import type { PokemonTCG } from 'pokemon-tcg-sdk-typescript';
 import pkg from 'lodash';
+import { findCardsByQueries } from '../pokemon-api-cache/api-cache';
 const { take, shuffle } = pkg;
 
 /**
@@ -9,16 +10,16 @@ const { take, shuffle } = pkg;
  * @returns 
  */
 export async function generatePack(setName: string): Promise<PokemonTCG.Card[]> {
-	const setCommons = (await PokemonTCG.findCardsByQueries({q: `set.id:${setName} supertype:Pokemon rarity:Common`}));
+	const setCommons = (await findCardsByQueries({q: `set.id:${setName} supertype:Pokemon rarity:Common`}));
 	const selectedCommons = take(shuffle(setCommons), 6);
 
-	const setUncommons = (await PokemonTCG.findCardsByQueries({q: `set.id:${setName} supertype:Pokemon rarity:Uncommon`}));
+	const setUncommons = (await findCardsByQueries({q: `set.id:${setName} supertype:Pokemon rarity:Uncommon`}));
 	const selectedUncommons = take(shuffle(setUncommons), 3);
 
-	const setRare = (await PokemonTCG.findCardsByQueries({q: `set.id:${setName} supertype:Pokemon rarity:Rare*`}));
+	const setRare = (await findCardsByQueries({q: `set.id:${setName} supertype:Pokemon rarity:Rare*`}));
 	const selectedRare = take(shuffle(setRare), 1);
 
-	const setTrainers = (await PokemonTCG.findCardsByQueries({q: `set.id:${setName} supertype:Trainer`}));
+	const setTrainers = (await findCardsByQueries({q: `set.id:${setName} supertype:Trainer`}));
 	const selectedTrainer = take(shuffle(setTrainers), 1);
 	return [...selectedCommons, ...selectedUncommons, ...selectedTrainer, ...selectedRare];
 }
