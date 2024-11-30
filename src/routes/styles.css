@@ -183,7 +183,7 @@ button.psa--image {
     width: 100%;
     border-radius: 9px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: nowrap;
     align-content: center;
     justify-content: space-evenly;

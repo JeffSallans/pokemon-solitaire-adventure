@@ -54,7 +54,7 @@
 <div>
     <div class="title-container">
         <img class="title-icon" alt="pokemon-solitaire-adventure" src="{iconImage}"/>
-        <div class="title-moves money">{$moves} moves left</div>
+        <div class="title-moves money">{$moves}x moves</div>
     </div>
     {#await fetchData()}
         <div class="spinner-container">
@@ -73,16 +73,12 @@
                 </div>
                 <div class="gym-party-container">
                     {#each $currentGymLeader.party as card(card.id)}
-                        <div class="gym-party-card psa--card" 
+                        <div class="gym-party-card" 
                             in:fly={{ y: -300 }}
                             out:fade
                             animate:flip="{{duration: flipDurationMs}}"
                         >
-                            <img class="gym-party-card-image psa--card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
-                            <div class="psa--card-cover psa--background-{card.type}">
-                                <div class="card-attack">{card.attack}A</div>
-                                <div class="card-health">{card.maxHealth}H</div>
-                            </div>
+                        <Card card={card} />
                         </div>
                     {/each}
                 </div>
@@ -124,14 +120,10 @@
         <div class="inspect-container">
             {#if $focusCard != null}
             {#key $focusCard.id}
-            <div class="psa--card inspect-card"
+            <div class="inspect-card"
                 in:fade
             >
-                <img class="psa--card-image" alt={$focusCard.cardDef.name} src={$focusCard.cardDef.images.large} />
-                <div class="psa--card-cover psa--background-{$focusCard.type}">
-                    <div class="card-attack">{$focusCard.attack}A</div>
-                    <div class="card-health">{$focusCard.maxHealth}H</div>
-                </div>
+                <Card card={$focusCard} />
             </div>
             {/key}
             {/if}
@@ -169,15 +161,11 @@
             <div class="battle-my-card">
                 <!-- Card -->
                 {#key $activePlayer.id}
-                    <div class="psa--card battle-card" 
+                    <div class="battle-card" 
                         in:fly={{x:-100}}
                         out:fade
                     >
-                        <img class="psa--card-image battle-card-image" alt="{$activePlayer.cardInfo.cardDef.name}" src="{$activePlayer.cardInfo.cardDef.images.small}"/>
-                        <div class="psa--card-cover psa--background-{$activePlayer.cardInfo.type}">
-                            <div class="card-attack">{$activePlayer.cardInfo.attack}A</div>
-                            <div class="card-health">{$activePlayer.cardInfo.maxHealth}H</div>
-                        </div>
+                        <Card card={$activePlayer.cardInfo} />
                     </div>
                 {/key}
                 <!-- Health Counters -->
@@ -201,15 +189,11 @@
             <div class="battle-opp-card">
                 <!-- Card -->
                 {#key $activeOpponent.id}
-                    <div class="psa--card battle-card" 
+                    <div class="battle-card" 
                         in:fly={{x:-100}}
                         out:fade
                     >
-                        <img class="psa--card-image battle-card-image" alt="{$activeOpponent.cardInfo.cardDef.name}" src="{$activeOpponent.cardInfo.cardDef.images.small}"/>
-                        <div class="psa--card-cover psa--background-{$activeOpponent.cardInfo.type}">
-                            <div class="card-attack">{$activeOpponent.cardInfo.attack}A</div>
-                            <div class="card-health">{$activeOpponent.cardInfo.maxHealth}H</div>
-                        </div>
+                        <Card card={$activeOpponent.cardInfo} />
                     </div>
                 {/key}
                 <!-- Health Counters -->
