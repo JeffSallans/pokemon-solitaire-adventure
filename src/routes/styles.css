@@ -200,13 +200,13 @@ button.psa--image {
 }
 
 .psa--background-Grass {
-	background: rgb(74,227,21);
-	background: linear-gradient(27deg, rgba(74,227,21,1) 0%, rgba(193,227,21,1) 100%);
+	background: rgb(141,210,64);
+	background: linear-gradient(27deg, rgba(141,210,64,1) 0%, rgba(193,227,21,1) 100%);
 }
 
 .psa--background-Water {
-	background: rgb(60,111,247);
-	background: linear-gradient(27deg, rgba(60,111,247,1) 0%, rgba(12,195,249,1) 100%);
+	background: rgb(79,144,240);
+	background: linear-gradient(27deg, rgba(79,144,240,1) 0%, rgba(133,214,237,1) 100%);
 }
 
 .psa--background-Fire {
@@ -289,4 +289,9 @@ button.psa--image {
     position: absolute;
     right: 4rem;
     top: 14rem;
+}
+
+.psa--icon svg {
+	width: 2rem;
+	height: 1.7rem;
 }

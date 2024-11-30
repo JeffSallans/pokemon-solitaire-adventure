@@ -17,6 +17,12 @@
 	import lodash from 'lodash';
 	const { range, indexOf } = lodash;
 
+    import MoveIcon from '../components/MoveIcon.svelte';
+    import RightArrowIcon from '../components/RightArrowIcon.svelte';
+    import Energy from '../components/Energy.svelte';
+    import Card from '../components/Card.svelte';
+
+
 	/** @type {import('./$types').PageData} */
 
     let game = new SolitaireGame();
@@ -84,7 +90,7 @@
             <div class="battle-button-container">
                 <button class="psa--primary gym-start-button" on:click={(e) => game.startBattle()}>
                     Battle
-                    <div class="gym-start-cost">Cost 1 Move</div>
+                    <div class="gym-start-cost">Cost 1 <MoveIcon /></div>
                 </button>
             </div>
         
@@ -99,11 +105,7 @@
                             out:send={{ key: card.id }}
                             animate:flip="{{duration: flipDurationMs}}"
                         >
-                            <img class="psa--card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
-                            <div class="psa--card-cover psa--background-{card.type}">
-                                <div class="card-attack">{card.attack}A</div>
-                                <div class="card-health">{card.maxHealth}H</div>
-                            </div>
+                            <Card card={card}></Card>
                         </div>
                     {/each}
                     <div class="psa--card card-empty"> </div>
@@ -143,14 +145,13 @@
                     animate:flip="{{duration: flipDurationMs}}"
                     bind:this={game.adventureRefs[adv.id]}
                 >
-                    <img class="adventure-image" alt="{adv.name}" src="{adv.imageUrl}" data-drag-consider="false"/>
-                    <div class="adventure-text">{adv.name}</div>
-
-                    <div class="adventure-card-zone">
+                    <div class="adventure-trade">
                         <img class="adventure-energy" alt="energy" src="{adv.energyUrl}"/>
+                        <img class="adventure-arrow" alt="energy" src="{adv.energyUrl}"/>
+                        <span class="adventure-moves">2 moves</span>>
                     </div>
                     {#if $focusCard != null && game.isAdventureEligible(adv)}
-                        <button class="psa--secondary adventure-button" on:click={game.onAdventureClick(adv)}>Use</button>
+                        <button class="psa--secondary adventure-button" on:click={game.onAdventureClick(adv)}>Trade</button>
                     {/if}
                 </div>
             {/each}
