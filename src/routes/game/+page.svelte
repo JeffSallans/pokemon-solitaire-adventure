@@ -54,7 +54,9 @@
 <div>
     <div class="title-container">
         <img class="title-icon" alt="pokemon-solitaire-adventure" src="{iconImage}"/>
-        <div class="title-moves money">{$moves}x <MoveIcon /></div>
+        <div class="title-moves money">Moves Left: 
+            {#each {length: $moves} as _, i} <MoveIcon />{/each}
+        </div>
     </div>
     {#await fetchData()}
         <div class="spinner-container">
@@ -349,11 +351,8 @@ img.title-icon {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     
-    background: rgb(2,0,36);
-    background: linear-gradient(8deg, rgba(2,0,36,1) 0%, rgba(9,38,121,1) 51%, rgba(2,143,222,1) 92%, rgba(0,177,255,1) 100%);
-
     color: white;
     fill: white;
 
@@ -365,6 +364,11 @@ img.title-icon {
     text-align: center;
     font-size: 3rem;
     border-radius: 12px;
+}
+
+:global(.title-moves svg) {
+    width: 4rem;
+    height: 4rem;
 }
 
 .gym {
