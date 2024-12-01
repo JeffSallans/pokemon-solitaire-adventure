@@ -140,7 +140,7 @@
                         bind:this={game.adventureRefs[adv.id]}
                     >
                         <div class="adventure-trade">
-                            <Energy class="adventure-energy" energyType={adv.id} />
+                            <Energy class="adventure-energy" energyType={adv.conditionEnergy[0]} />
                             <RightArrowIcon class="adventure-arrow" />
                             <span class="adventure-moves"><MoveIcon /><MoveIcon /></span>
                         </div>
