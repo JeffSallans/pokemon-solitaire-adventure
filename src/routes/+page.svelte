@@ -102,7 +102,7 @@
                 out:send={{ key: tcgSet.id }}
                 animate:flip="{{duration: flipDurationMs}}"
             >
-                <img class="set" src="{tcgSet.url}" />
+                <img class="set" alt="tcgSet.id" src="{tcgSet.url}" />
             </div>
             {/each}
         </div>

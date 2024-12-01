@@ -397,11 +397,6 @@ img.gym-leader-portrait {
     display: inline-block;
 }
 
-img.gym-party-card-image {
-    width: 18rem;
-    max-width: 28vw;
-}
-
 @property --myColor1 {
   syntax: '<color>';
   initial-value: rgba(36,4,0,1);

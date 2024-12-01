@@ -1,6 +1,7 @@
 import { PokemonTCG } from 'pokemon-tcg-sdk-typescript';
 import { json } from '@sveltejs/kit';
-import { map, pick } from 'lodash';
+import pkg from 'lodash';
+const { map, pick } = pkg;
 
 /**
  * Returns all pokemon TCG set data
