@@ -54,7 +54,7 @@
 <div>
     <div class="title-container">
         <img class="title-icon" alt="pokemon-solitaire-adventure" src="{iconImage}"/>
-        <div class="title-moves money">{$moves}x moves</div>
+        <div class="title-moves money">{$moves}x <MoveIcon /></div>
     </div>
     {#await fetchData()}
         <div class="spinner-container">
@@ -117,36 +117,39 @@
             </div>
         </div>
 
-        <div class="inspect-container">
-            {#if $focusCard != null}
-            {#key $focusCard.id}
-            <div class="inspect-card"
-                in:fade
-            >
-                <Card card={$focusCard} />
-            </div>
-            {/key}
-            {/if}
-        </div>
+        <div class="bottom-container">
 
-        <div class="adventure-container">
-            {#each $playableAdventures as adv(adv.id)}
-                <div class="adventure"
-                    in:fly={{y:-200}}
-                    out:fade
-                    animate:flip="{{duration: flipDurationMs}}"
-                    bind:this={game.adventureRefs[adv.id]}
+            <div class="inspect-container">
+                {#if $focusCard != null}
+                {#key $focusCard.id}
+                <div class="inspect-card"
+                    in:fade
                 >
-                    <div class="adventure-trade">
-                        <img class="adventure-energy" alt="energy" src="{adv.energyUrl}"/>
-                        <img class="adventure-arrow" alt="energy" src="{adv.energyUrl}"/>
-                        <span class="adventure-moves">2 moves</span>>
-                    </div>
-                    {#if $focusCard != null && game.isAdventureEligible(adv)}
-                        <button class="psa--secondary adventure-button" on:click={game.onAdventureClick(adv)}>Trade</button>
-                    {/if}
+                    <Card card={$focusCard} />
                 </div>
-            {/each}
+                {/key}
+                {/if}
+            </div>
+    
+            <div class="adventure-container">
+                {#each $playableAdventures as adv(adv.id)}
+                    <div class="adventure"
+                        in:fly={{y:-200}}
+                        out:fade
+                        animate:flip="{{duration: flipDurationMs}}"
+                        bind:this={game.adventureRefs[adv.id]}
+                    >
+                        <div class="adventure-trade">
+                            <Energy class="adventure-energy" energyType={adv.id} />
+                            <RightArrowIcon class="adventure-arrow" />
+                            <span class="adventure-moves"><MoveIcon /><MoveIcon /></span>
+                        </div>
+                        {#if $focusCard != null && game.isAdventureEligible(adv)}
+                            <button class="psa--secondary adventure-button" on:click={game.onAdventureClick(adv)}>Trade</button>
+                        {/if}
+                    </div>
+                {/each}
+            </div>
         </div>
     </div>
 
@@ -293,25 +296,12 @@
 .adventure {
     display: inline-block;
     position: relative;
-    width: 48rem;
+    width: 100%;
     height: 27rem;
-    background: grey;
     text-align: center;
     vertical-align: middle;
     color: white;
     margin-bottom: 3rem;
-}
-
-.adventure-text {
-    display: block;
-    position: absolute;
-
-    top: 0;
-    font-size: 2rem;
-    text-align: center;
-    width: 40rem;
-    background: #00000052;
-
 }
 
 .adventure-button.adventure-button {
@@ -327,46 +317,15 @@
     padding-right: 3rem;
 }
 
-.adventure-image {
-    width: 40rem;
-    height: 100%;
-    object-fit: cover;
-    filter: grayscale(1);
-
-    transition-property: filter;
-    transition-duration: 500ms;
+:global(.adventure .psa--icon svg) {
+    width: 6rem;
+    height: 6rem;
+    fill: white;
 }
 
-.adventure:not([data-drag-consider="false"]) .adventure-image {
-    filter: grayscale(0);
-}
-
-.adventure-image.adventure-image:not([data-drag-consider="false"]) {
-    filter: grayscale(0);
-}
-
-.adventure-card-zone {
-    position: absolute;
-    right: 1rem;
-    top: 0rem;
-    bottom: 0rem;
-    margin: auto 0;
-    height: 18rem;
-    background: #808080ba;
-    border-radius: 12px;
-    border: 5px solid #0000008f;
-    width: 13rem;
-    pointer-events: none;
-}
-
-img.adventure-energy {
-    position: absolute;
-    margin: auto;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    height: 4rem;
+:global(.adventure .psa--energy) {
+    width: 6rem;
+    height: 6rem;
 }
 
 .title-container {
@@ -388,20 +347,21 @@ img.title-icon {
     height: 15rem;
     width: calc(100% - 22rem);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-
+    justify-content: flex-end;
+    
     background: rgb(2,0,36);
     background: linear-gradient(8deg, rgba(2,0,36,1) 0%, rgba(9,38,121,1) 51%, rgba(2,143,222,1) 92%, rgba(0,177,255,1) 100%);
-    
+
     color: white;
-    
+    fill: white;
+
     margin-bottom: 1rem;
     padding: 1rem;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
-    
+
     text-align: center;
     font-size: 3rem;
     border-radius: 12px;
@@ -538,30 +498,29 @@ img.gym-party-card-image {
 .inspect-container {
     padding: 2rem;
     width: 100%;
-    max-width: 60rem;
+    max-width: 55rem;
 }
 
-.psa--card.inspect-card {
-    width: 60vw;
-}
-
-.psa--card.inspect-card .psa--card-image {
+:global(.inspect-card .psa--card) {
     width: 100%;
 }
 
-.psa--card.inspect-card .psa--card-cover {
-    top: 36rem;
-    height: 33rem;
-    font-size: xx-large;
+:global(.inspect-card .psa--card .psa--card-image) {
+    width: 100%;
 }
 
-.inspect-container {
-    min-width: 60vw;
+:global(.inspect-card .psa--card .psa--card-cover) {
+    height: auto;
+    bottom: -50rem;
+    top: 30rem;
+    font-size: x-large;
 }
 
-.inspect-container .psa--card-cover {
-    top: 36rem;
-    height: 33rem;
+.bottom-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    min-width: 88rem;
 }
 
 </style>
