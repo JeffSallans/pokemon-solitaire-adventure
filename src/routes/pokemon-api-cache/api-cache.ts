@@ -28,7 +28,12 @@ export async function findCardsByQueries(params: { q: string }): Promise<Pokemon
 
 	const result = (await PokemonTCG.findCardsByQueries(params));
 	findCardsByQueriesCache[query] = result;
-	fs.writeFileSync('findCardsByQueriesCache.json', JSON.stringify(findCardsByQueriesCache));
+	try {
+		fs.writeFileSync('findCardsByQueriesCache.json', JSON.stringify(findCardsByQueriesCache));
+	}
+	catch (err) {
+		console.log(err);
+	}
 	return result;
 }
 
@@ -52,6 +57,11 @@ export async function findCardByID(cardId: string): Promise<PokemonTCG.Card | un
 
 	const result = (await PokemonTCG.findCardByID(cardId));
 	findCardByIDCache[cardId] = result;
-	fs.writeFileSync('findCardByIDCache.json', JSON.stringify(findCardByIDCache));
+	try {
+		fs.writeFileSync('findCardByIDCache.json', JSON.stringify(findCardByIDCache));
+	}
+	catch (err) {
+		console.log(err);
+	}
 	return result;
 }
