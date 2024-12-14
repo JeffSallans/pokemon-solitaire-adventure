@@ -4,10 +4,11 @@
     import HealthIcon from './HealthIcon.svelte';
 
     export let card;
+    export let isStacked = false;
 
 </script>
 
-<div class="psa--card">
+<div class="psa--card { isStacked ? 'psa--card_stacked' : ''}">
     <img class="psa--card-image" alt="{card.cardDef.name}" src="{card.cardDef.images.small}"/>
     <div class="psa--card-cover psa--background-{card.type}">
         <div class="card-attack">{card.attack}<AttackIcon /></div>

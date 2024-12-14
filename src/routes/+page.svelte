@@ -82,8 +82,6 @@
         playableTcgSets = calculateNewPlayableTcgSets(offset);
     }
 
-
-
 </script>
 
 
@@ -102,7 +100,11 @@
                 out:send={{ key: tcgSet.id }}
                 animate:flip="{{duration: flipDurationMs}}"
             >
-                <img class="set" alt="tcgSet.id" src="{tcgSet.url}" />
+                {#if tcgSet.id == null}
+                    <div class="set"></div>
+                {:else}
+                    <img class="set" alt="tcgSet.id" src="{tcgSet.url}" />
+                {/if}
             </div>
             {/each}
         </div>

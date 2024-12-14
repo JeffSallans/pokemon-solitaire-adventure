@@ -162,8 +162,13 @@ button.psa--image {
 /* ===== Card ===== */
 
 .psa--card {
-    height: 5rem;
-    position: relative;
+	height: auto;
+	position: relative;
+}
+
+.psa--card.psa--card_stacked {
+    height: auto;
+	height: 5rem;
 }
 
 .psa--card.card-empty {

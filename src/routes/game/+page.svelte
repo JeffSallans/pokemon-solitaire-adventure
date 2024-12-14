@@ -48,6 +48,22 @@
         }
     }
 
+    /** Debugging function to show hidden screen */
+    function togglePause() {
+        if ($state == 'Battling') {
+            $state = 'Paused';
+            globalThis.activeOpponent = $activeOpponent;
+            globalThis.activePlayer = $activePlayer;
+        }
+        else {
+            $state = 'Battling'
+        }
+    }
+
+    // @ts-ignore
+    globalThis.togglePause = togglePause;
+    console.log("DEBUG: run togglePause() to stop the game during battle.")
+
 </script>
 
 
@@ -103,7 +119,7 @@
                             out:send={{ key: card.id }}
                             animate:flip="{{duration: flipDurationMs}}"
                         >
-                            <Card card={card}></Card>
+                            <Card card={card} isStacked=true></Card>
                         </div>
                     {/each}
                     <div class="psa--card card-empty"> </div>
@@ -155,11 +171,14 @@
         </div>
     </div>
 
-    {#if $state == 'Battling'}
+    {#if $state == 'Battling' || $state == 'Paused'}
     <div class="battle-container">
-        <div class="battle-background-1"></div>
-        <div class="battle-background-2"></div>
-        <div class="battle-background-3"></div>
+        <div class="battle-background-1">
+            <div class="battle-background-ray battle-background-ray-1"></div>
+            <div class="battle-background-ray battle-background-ray-2"></div>
+            <div class="battle-background-ray battle-background-ray-3"></div>
+            <div class="battle-background-ray battle-background-ray-4"></div>
+        </div>
 
         <div class="battle-cards">
             {#if $activePlayer != null}
@@ -463,8 +482,51 @@ img.gym-leader-portrait {
     display: inline-block;
     width: 100vw;
     height: 250px;
-    background: #3c5beb;
+    background: rgb(60,91,235);
+    background: linear-gradient(0deg, rgba(60,91,235,1) 0%, rgba(255,255,255,1) 50%, rgba(60,91,235,1) 100%);
     top: calc(50vh - 125px);
+}
+
+.battle-background-ray {
+    background: #ffffff65;
+    height: 1rem;
+    width: 30rem;
+    border-radius: 2px;
+    position: absolute;
+}
+
+.battle-background-ray-1 {
+    top: 30px;
+    left: 200px;
+    animation: battle-background-ray-slide 3.5s linear 0s infinite normal forwards;
+}
+
+.battle-background-ray-2 {
+    top: 100px;
+    left: 10px;
+    animation: battle-background-ray-slide 3.8s linear 0s infinite normal forwards;
+}
+
+.battle-background-ray-3 {
+    top: 180px;
+    left: 300px;
+    animation: battle-background-ray-slide 4.2s linear 0s infinite normal forwards;
+}
+
+.battle-background-ray-4 {
+    top: 120px;
+    left: -200px;
+    animation: battle-background-ray-slide 4s linear 0s infinite normal forwards;
+}
+
+@keyframes battle-background-ray-slide {
+	0% {
+		transform: translateX(-50vw);
+	}
+
+	100% {
+		transform: translateX(150vw);
+	}
 }
 
 .battle-cards {
@@ -510,7 +572,7 @@ img.gym-leader-portrait {
 
 :global(.inspect-card .psa--card .psa--card-cover) {
     height: auto;
-    bottom: -50rem;
+    bottom: 0rem;
     top: 30rem;
     font-size: x-large;
 }
