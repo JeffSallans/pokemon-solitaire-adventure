@@ -27,7 +27,7 @@
 
     let game = new SolitaireGame();
 
-    let { moves, stacks, playableAdventures, currentGymLeader, focusCard } = game;
+    let { moves, stacks, playableAdventures, currentGymLeader, focusCard, inspectCard } = game;
     let { activeOpponent, activePlayer, state } = game.battle;
 
     const flipDurationMs = 100;
@@ -63,6 +63,7 @@
     // @ts-ignore
     globalThis.togglePause = togglePause;
     console.log("DEBUG: run togglePause() to stop the game during battle.")
+    console.log("DEBUG: Variables available for details. inspectCard, focusCard, activePlayer, activeOpponent")
 
 </script>
 
@@ -91,12 +92,15 @@
                 </div>
                 <div class="gym-party-container">
                     {#each $currentGymLeader.party as card(card.id)}
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <!-- svelte-ignore a11y-no-static-element-interactions -->
                         <div class="gym-party-card" 
                             in:fly={{ y: -300 }}
                             out:fade
                             animate:flip="{{duration: flipDurationMs}}"
+                            on:click={(e) => game.onInspectClick(card)}
                         >
-                        <Card card={card} />
+                        <Card card={card}/>
                         </div>
                     {/each}
                 </div>
@@ -114,10 +118,13 @@
                     bind:this={game.stackRefs[i]}
                 >
                     {#each stack as card(card.id)}
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <!-- svelte-ignore a11y-no-static-element-interactions -->
                         <div class="psa--card" 
                             in:receive={{ key: card.id }}
                             out:send={{ key: card.id }}
                             animate:flip="{{duration: flipDurationMs}}"
+                            on:click={(e) => game.onInspectClick(card)}
                         >
                             <Card card={card} isStacked=true></Card>
                         </div>
@@ -144,6 +151,14 @@
                     in:fade
                 >
                     <Card card={$focusCard} />
+                </div>
+                {/key}
+                {:else if $inspectCard != null}
+                {#key $inspectCard.id}
+                <div class="inspect-card"
+                    in:fade
+                >
+                    <Card card={$inspectCard} />
                 </div>
                 {/key}
                 {/if}
@@ -514,7 +529,7 @@ img.gym-leader-portrait {
 }
 
 .battle-background-ray-4 {
-    top: 120px;
+    top: 160px;
     left: -200px;
     animation: battle-background-ray-slide 4s linear 0s infinite normal forwards;
 }

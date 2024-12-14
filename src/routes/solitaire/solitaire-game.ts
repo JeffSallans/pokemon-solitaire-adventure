@@ -63,7 +63,10 @@ export class SolitaireGame {
 
 	moves = writable(0);
 
+	/** Card the user picked up to move */
 	focusCard: Writable<SolitaireCard | null> = writable(null);
+	/** Card the user wants to see in more detail */
+	inspectCard: Writable<SolitaireCard | null> = writable(null);
 
 	stackRefs = {};
 	adventureRefs = {};
@@ -110,9 +113,27 @@ export class SolitaireGame {
 			this.draggingCardLastStackIndex = currentStack;
 
 			this.focusCard.set(card);
+			// @ts-ignore
+			globalThis.focusCard = card;
+
+			this.inspectCard.set(null);
+			// @ts-ignore
+			globalThis.inspectCard = null;
 		};
 	}
 
+	/** When a user clicks on a card to view it's details */
+	onInspectClick(card: SolitaireCard) {
+		console.log('onInspectClick');
+
+		if (get(this.focusCard) == null) {
+			this.inspectCard.set(card);
+			// @ts-ignore
+			globalThis.inspectCard = card;
+		}
+	}
+
+	/** User selects stack to put the focused card on */
 	onStackClick(stackIndex: number) {
 		return (e: Event) => {
 			console.log('onClickStack');
@@ -134,11 +155,15 @@ export class SolitaireGame {
 
 			// Remove focus and drag state
 			this.focusCard.set(null);
+			// @ts-ignore
+			globalThis.focusCard = null;
+
 			this.draggingCard = null;
 			this.draggingCardLastStackIndex = null;
 		}
 	}
 
+	/** Trading a card in for moves */
 	onAdventureClick(adventure: Adventure) {
 		return (e: Event) => {
 			console.log('onClickAdventure');
@@ -154,6 +179,9 @@ export class SolitaireGame {
 
 			// Remove focus and drag state
 			this.focusCard.set(null);
+			// @ts-ignore
+			globalThis.focusCard = null;
+
 			this.draggingCard = null;
 			this.draggingCardLastStackIndex = null;
 		}
@@ -172,85 +200,6 @@ export class SolitaireGame {
 		const eligible = this.draggingCard.cardDef.supertype == "Trainer" || this.draggingCard.cardDef.types == null ||
 						adventure.conditionEnergy.indexOf(this.draggingCard.cardDef.types[0]) != -1;
 		return eligible;
-	}
-
-	onStackHoverEnter(stackIndex: number) {
-		return () => {
-			// Check if dragging
-			if (this.draggingCard == null) return;
-			// Check eligibility
-			if (get(this.moves) == 0 || stackIndex == this.draggingCardLastStackIndex) return;
-			
-			console.log('onStackHoverEnter');
-			
-			// Show consideration and disable draggedCard
-			this.targetStackIndex = stackIndex;
-		};
-	}
-
-	onStackHoverExit(stackIndex: number | null) {
-		return () => {
-			// Check if dragging
-			if (this.draggingCard == null) return;
-			// Check eligibility
-			if (get(this.moves) == 0) return;
-			
-			console.log('onStackHoverExit');
-	
-			// Remove consideration and enable draggedCard
-			this.targetStackIndex = null;
-		};
-	}
-
-	onStackDrop(stackIndex: number) {
-		return (e: Event) => {
-			e.preventDefault();
-			console.log('onStackDrop');
-
-			if (this.draggingCard == null) return;
-
-			this.movePoke(this.draggingCard, stackIndex);
-		};
-	}
-
-	onAdventureHoverEnter(adventure: Adventure) {
-		return (e: Event) => {
-			// Check if dragging
-			if (this.draggingCard == null || this.draggingCard.cardDef == null || this.draggingCard.cardDef.types == null) return;
-			// Check eligibility
-			if (this.draggingCard.cardDef.supertype != "Trainer" &&
-				adventure.conditionEnergy.indexOf(this.draggingCard.cardDef.types[0]) == -1) return;
-			
-			console.log('onAdventureHoverEnter');
-			
-			if (e.target)  e.target.setAttribute('data-drag-consider', 'true');
-
-			// If eligible remove greyscale and set value
-			this.targetAdventure = adventure;
-		};
-	}
-
-	onAdventureHoverExit(adventure: Adventure | null) {
-		return (e: Event) => {
-			// Check if dragging
-			if (this.draggingCard == null) return;
-
-			console.log('onAdventureHoverExit');
-
-			if (e.target) e.target.setAttribute('data-drag-consider', 'false');
-
-			// Add back greyscale and remove value
-			this.targetAdventure = null;
-		};
-	}
-
-	onAdventureDrop(adventure: Adventure) {
-		return () => {
-			console.log('onAdventureDrop');
-			if (this.draggingCard == null) return;
-
-			this.completeAdventureWithPoke(this.draggingCard, adventure);
-		};
 	}
 
 	/** Trigger an auto battle */
