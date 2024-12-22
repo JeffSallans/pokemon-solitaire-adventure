@@ -36,10 +36,10 @@
         const cardSet = (new URLSearchParams(window.location.search)).get('cardSet');
         const packsRes = await fetch(`/pack?cardSet=${cardSet}`);
         const packs = await packsRes.json();
-        const gymLeaderRes = await fetch("/leaders");
-        const gymLeader = await gymLeaderRes.json();
+        const gymLeaderRes = await fetch(`/leaders?cardSet=${cardSet}`);
+        const leaders = await gymLeaderRes.json();
 
-        game.setupGame(packs, gymLeader.mistyParty, gymLeader.surgeParty, gymLeader.blaineParty);
+        game.setupGame(packs, leaders);
 
         if (packsRes.ok) {
             return packs;

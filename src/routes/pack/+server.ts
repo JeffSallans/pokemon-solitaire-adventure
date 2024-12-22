@@ -10,7 +10,7 @@ const { includes } = pkg;
  * @param setName The ID of the set to use, example base1
  * @returns 
  */
-export async function GET(request) {
+export async function GET(request: { url: { searchParams: { get: (arg0: string) => string; }; }; }) {
 	let cardSet = request.url.searchParams.get('cardSet') || '';
 	let cleanCardSet = 'base1';
 	let availableSets = ['base1', 'base2'];
