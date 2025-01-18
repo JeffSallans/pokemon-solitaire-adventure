@@ -88,6 +88,9 @@ export class SolitaireGame {
 	{ upgradeCost: number, upgradeAttack: number, upgradeHealth: number} {
 
 		const hasPokemonPower = card.abilities && card.abilities?.length > 0;
+		const hasSpecialMoves = card.attacks && _.every(card.attacks, a => {
+			return a.damage == "";
+		});
 		const hasSelfDamaging = card.attacks && _.some(card.attacks, a => {
 			return a.text.includes('damage to itself');
 		});
@@ -109,6 +112,14 @@ export class SolitaireGame {
 			return {
 				upgradeCost: 1,
 				upgradeAttack: 2,
+				upgradeHealth: 4,
+			};
+		}
+		// Special Moves - Cheap to upgrade, great attack
+		else if (hasSpecialMoves) {
+			return {
+				upgradeCost: 1,
+				upgradeAttack: 3,
 				upgradeHealth: 4,
 			};
 		}

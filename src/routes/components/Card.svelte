@@ -18,8 +18,8 @@
         {#if card.cardDef.supertype == "Trainer"}
         <div class="trainer-move-value">Use for any trade</div>
         {:else}
-        <div class="card-attack">{card.attack}<AttackIcon />{#if !card.isUpgraded}<span class="card-upgrade-value">{#if card.upgradeAttack > 0}+{/if}{card.upgradeAttack}</span>{/if}</div>
-        <div class="card-health">{card.maxHealth}<HealthIcon />{#if !card.isUpgraded}<span class="card-upgrade-value">{#if card.upgradeHealth > 0}+{/if}{card.upgradeHealth}</span>{/if}</div>
+        <div class="card-attack">{card.attack}<AttackIcon />{#if !card.isUpgraded}<span class="card-upgrade-value">{#if card.upgradeAttack >= 0}+{/if}{card.upgradeAttack}</span>{/if}</div>
+        <div class="card-health">{card.maxHealth}<HealthIcon />{#if !card.isUpgraded}<span class="card-upgrade-value">{#if card.upgradeHealth >= 0}+{/if}{card.upgradeHealth}</span>{/if}</div>
         <div class="card-weakness">weak to <Energy energyType={card.weakness} /></div>
             {#if card.isUpgraded}
             <div class="card-upgrade"><StarIcon /></div>
