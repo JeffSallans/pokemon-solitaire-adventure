@@ -186,6 +186,10 @@
         </div>
     </div>
 
+    {#if $moves < 3}
+        <div class="danger-frame"></div>
+    {/if}
+
     {#if $state == 'Battling' || $state == 'Paused'}
     <div class="battle-container">
         <div class="battle-background-1">
@@ -597,6 +601,19 @@ img.gym-leader-portrait {
     flex-direction: row;
     flex-wrap: nowrap;
     min-width: 88rem;
+}
+
+.danger-frame {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+
+    -webkit-box-shadow: inset 0px 0px 20px 20px rgba(203, 23, 50,1);
+    -moz-box-shadow: inset 0px 0px 20px 20px rgba(203, 23, 50,1);
+    box-shadow: inset 0px 0px 20px 20px rgba(203, 23, 50, 1);    
 }
 
 </style>
