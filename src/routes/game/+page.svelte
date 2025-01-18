@@ -126,7 +126,7 @@
                             animate:flip="{{duration: flipDurationMs}}"
                             on:click={(e) => game.onInspectClick(card)}
                         >
-                            <Card card={card} isStacked=true></Card>
+                            <Card card={card} isStacked=true isFocused={$focusCard == card}></Card>
                         </div>
                     {/each}
                     <div class="psa--card card-empty"> </div>

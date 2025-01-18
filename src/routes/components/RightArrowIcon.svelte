@@ -1,5 +1,5 @@
 <script>
-    import RightArrowIcon from '$lib/images/icons/right-arrow.svg?raw';
+    import RightArrowIcon from '$lib/images/icons/transaction.svg?raw';
 </script>
 
 <span class="psa--icon">

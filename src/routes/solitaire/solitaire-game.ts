@@ -214,8 +214,12 @@ export class SolitaireGame {
 
 		// Clear currentCard
 		this.stacks.update((v) => {
+			if (this.draggingCard == null) {
+				console.error('Dragging Card is null');
+				return v;
+			};
 			v[stackIndex].push(this.draggingCard);
-			v[this.draggingCardLastStackIndex].pop();
+			v[this.draggingCardLastStackIndex || 0].pop();
 			return v;
 		});
 		// Animate enter
@@ -229,7 +233,7 @@ export class SolitaireGame {
 
 	completeAdventureWithPoke(card: SolitaireCard, adventure: Adventure) {
 		// Check elibility
-		if (card.cardDef.supertype != "Trainer" &&
+		if (card.cardDef.supertype != "Trainer" && card.cardDef.types != null &&
 			adventure.conditionEnergy.indexOf(card.cardDef.types[0]) == -1) return;
 
 		// Claim reward
@@ -237,7 +241,7 @@ export class SolitaireGame {
 		
 		// Animate card exit
 		this.stacks.update((v) => {
-			v[this.draggingCardLastStackIndex].pop();
+			v[this.draggingCardLastStackIndex || 0].pop();
 			return v;
 		});
 
@@ -269,7 +273,7 @@ export class SolitaireGame {
 	 * or null if you are not hovering over any stack
 	 */
 	getHoverOverAdventure(cursorX: number, cursorY: number): Adventure | null {
-		const selectedAdventureId = _.find(_.toPairs(this.adventureRefs), a => this.isCursorTouching(cursorX, cursorY, a[1])) || [];
+		const selectedAdventureId = _.find(_.toPairs(this.adventureRefs), a => this.isCursorTouching(cursorX, cursorY, a[1] as HTMLBaseElement)) || [];
 		const selectedAdventure = _.find(this.allAdventures, a => a.id == selectedAdventureId[0]) || null;
 		return selectedAdventure;
 	}
@@ -279,7 +283,7 @@ export class SolitaireGame {
 	 * or null if you are not hovering over any stack
 	 */
 	getHoverOverStack(cursorX: number, cursorY: number): number | null {
-		const selectedStack = _.find(_.toPairs(this.stackRefs), s => this.isCursorTouching(cursorX, cursorY, s[1])) || null;
+		const selectedStack = _.find(_.toPairs(this.stackRefs), s => this.isCursorTouching(cursorX, cursorY, s[1] as HTMLBaseElement)) || null;
 		if (selectedStack == null) return null;
 		return Number(selectedStack[0]);
 	}
