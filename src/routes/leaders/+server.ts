@@ -1,7 +1,8 @@
 import { PokemonTCG } from 'pokemon-tcg-sdk-typescript';
 import { json } from '@sveltejs/kit';
 import { findCardByID } from '../pokemon-api-cache/api-cache';
-import { includes, uniqueId } from 'lodash';
+import pkg from 'lodash';
+const { includes, uniqueId } = pkg;
 
 import mistyImage from '$lib/images/trainers/misty.png';
 import surgeImage from '$lib/images/trainers/surge.png';
