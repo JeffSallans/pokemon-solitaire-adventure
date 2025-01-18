@@ -64,17 +64,101 @@ export class SolitaireGame {
 	// ----------------------
 
 	convertToSolitaireCard(card: PokemonTCG.Card): SolitaireCard {
+		const attack = (_.max(
+			_.map(card.attacks, (a) => Number.parseInt(a.damage) || 0)
+		) || 0) / 10;
+		const maxHealth = Number.parseInt(card.hp || '100') / 10;
+		const upgradeInfo = this.getUpgradeDetailsForCard(card, attack, maxHealth);
 		return {
 			id: _.uniqueId('card'),
 			isNewToCollection: true,
-			attack: (_.max(
-				_.map(card.attacks, (a) => Number.parseInt(a.damage) || 0)
-			) || 0) / 10,
-			maxHealth: Number.parseInt(card.hp || '100') / 10,
+			attack,
+			maxHealth,
 			weakness: _.get(card.weaknesses, '[0].type', undefined),
 			type: _.get(card.types, '[0]', PokemonTCG.Type.Colorless),
-			cardDef: card
+			cardDef: card,
+			isUpgraded: false,
+			upgradeCost: upgradeInfo.upgradeCost,
+			upgradeAttack: upgradeInfo.upgradeAttack,
+			upgradeHealth: upgradeInfo.upgradeHealth
 		};
+	}
+
+	getUpgradeDetailsForCard(card: PokemonTCG.Card, attack: number, maxHealth: number): 
+	{ upgradeCost: number, upgradeAttack: number, upgradeHealth: number} {
+
+		const hasPokemonPower = card.abilities && card.abilities?.length > 0;
+		const hasSelfDamaging = card.attacks && _.some(card.attacks, a => {
+			return a.text.includes('damage to itself');
+		});
+		const hasEnergyDiscarding = card.attacks && _.some(card.attacks, a => {
+			return a.text.toLowerCase().includes('discard') && a.text.includes('energy');
+		});
+		const hasStatus = card.attacks && _.some(card.attacks, a => {
+			return a.text.toLowerCase().includes('defending pokémon is now');
+		});
+		const hasMultiplier = card.attacks && _.some(card.attacks, a => {
+			return a.damage.includes('x');
+		});
+		const hasAdd = card.attacks && _.some(card.attacks, a => {
+			return a.damage.includes('+');
+		});
+
+		// Pokemon Power - Cheap to upgrade, better health
+		if (hasPokemonPower) {
+			return {
+				upgradeCost: 1,
+				upgradeAttack: 2,
+				upgradeHealth: 4,
+			};
+		}
+		// Self Damaging - Cheap to upgrade, basic attack but less health
+		else if (hasSelfDamaging) {
+			return {
+				upgradeCost: 1,
+				upgradeAttack: 1,
+				upgradeHealth: -2,
+			};
+		}
+		// Energy Discarding - Expensive to upgrade, basic attack and health 
+		else if (hasEnergyDiscarding) {
+			return {
+				upgradeCost: 3,
+				upgradeAttack: 1,
+				upgradeHealth: 2,
+			};
+		}
+		// Status - Expensive to upgrade, double health
+		else if (hasStatus) {
+			return {
+				upgradeCost: 3,
+				upgradeAttack: 0,
+				upgradeHealth: maxHealth,
+			};
+		}
+		// Multiplier - Average to upgrade, better attack based on mult
+		else if (hasMultiplier) {
+			return {
+				upgradeCost: 2,
+				upgradeAttack: attack,
+				upgradeHealth: 0,
+			};
+		}
+		// Add - Average to upgrade, better attack 
+		else if (hasAdd) {
+			return {
+				upgradeCost: 2,
+				upgradeAttack: 3,
+				upgradeHealth: 0,
+			};
+		}
+
+		// Default basic upgrade
+		return {
+			upgradeCost: 2,
+			upgradeAttack: 1,
+			upgradeHealth: 2,
+		}
 	}
 
 	// ----------------------
@@ -188,6 +272,33 @@ export class SolitaireGame {
 		const eligible = this.draggingCard.cardDef.supertype == "Trainer" || this.draggingCard.cardDef.types == null ||
 						adventure.conditionEnergy.indexOf(this.draggingCard.cardDef.types[0]) != -1;
 		return eligible;
+	}
+
+	/** Upgrade the focus card */
+	onUpgradeClick() {
+		console.log('onUpgradeClick');
+
+		// Get focus card
+		const focusCard = get(this.focusCard);
+
+		// Check if focus card can be upgraded
+		if (focusCard == null || focusCard.isUpgraded) {
+			console.error('onUpgradeClick: Null or already upgraded');
+			return false;
+		}
+
+		// Check if enough moves
+		if (get(this.moves) < focusCard.upgradeCost) {
+			console.error('onUpgradeClick: Not enough moves');
+			return false;
+		}
+
+		// Do upgrade
+		focusCard.isUpgraded = true;
+		focusCard.attack += focusCard.upgradeAttack;
+		focusCard.maxHealth += focusCard.upgradeHealth;
+		this.focusCard.set(focusCard);
+		this.moves.update((m) => m - focusCard.upgradeCost);
 	}
 
 	/** Trigger an auto battle */

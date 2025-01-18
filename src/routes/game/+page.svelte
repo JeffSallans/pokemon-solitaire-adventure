@@ -150,7 +150,7 @@
                 <div class="inspect-card"
                     in:fade
                 >
-                    <Card card={$focusCard} />
+                    <Card card={$focusCard} showDetailInfo={true} />
                 </div>
                 {/key}
                 {:else if $inspectCard != null}
@@ -158,7 +158,7 @@
                 <div class="inspect-card"
                     in:fade
                 >
-                    <Card card={$inspectCard} />
+                    <Card card={$inspectCard} showDetailInfo={true} />
                 </div>
                 {/key}
                 {/if}
@@ -182,6 +182,20 @@
                         {/if}
                     </div>
                 {/each}
+                {#if $focusCard != null && !$focusCard.isUpgraded}
+                    <button class="psa--secondary upgrade-button" disabled={($moves < $focusCard.upgradeCost)} on:click={game.onUpgradeClick()}>
+                        Upgrade
+                        <div class="upgrade-button-cost">Cost {#each {length: $focusCard.upgradeCost} as _, i} <MoveIcon />{/each}
+                        </div>
+                    </button>
+                {/if}
+                {#if $focusCard == null && $inspectCard != null && !$inspectCard.isUpgraded}
+                    <button class="psa--secondary upgrade-button" disabled={true}>
+                        Upgrade
+                        <div class="upgrade-button-cost">Cost {#each {length: $inspectCard.upgradeCost} as _, i} <MoveIcon />{/each}
+                        </div>
+                    </button>
+                {/if}
             </div>
         </div>
     </div>
@@ -614,6 +628,15 @@ img.gym-leader-portrait {
     -webkit-box-shadow: inset 0px 0px 20px 20px rgba(203, 23, 50,1);
     -moz-box-shadow: inset 0px 0px 20px 20px rgba(203, 23, 50,1);
     box-shadow: inset 0px 0px 20px 20px rgba(203, 23, 50, 1);    
+}
+
+.upgrade-button {
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+.upgrade-button-cost {
+    font-size: small;
 }
 
 </style>

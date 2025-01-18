@@ -143,12 +143,18 @@ button:focus:not(:focus-visible) {
 	margin-bottom: 1rem;
 }
 
-.psa--secondary:hover {
+.psa--secondary:disabled {
+	background: rgb(186 176 196);
+    background: linear-gradient(90deg, rgb(177 175 183) 0%, rgb(194 178 207) 100%);
+	color: grey;
+}
+
+.psa--secondary:not(:disabled):hover {
     background: rgb(55,10,170);
     background: linear-gradient(90deg, rgba(55,10,170,1) 0%, rgba(104,12,177,1) 100%);
 }
 
-.psa--secondary:active {
+.psa--secondary:not(:disabled):active {
     background: rgb(135,66,255);
     background: linear-gradient(90deg, rgba(135,66,255,1) 0%, rgba(207,71,255,1) 100%);
 }
@@ -299,4 +305,14 @@ button.psa--image {
 .psa--icon svg {
 	width: 2rem;
 	height: 1.7rem;
+}
+
+.card-upgrade svg {
+    width: 4rem;
+    height: 4rem;
+}
+
+.psa--card_hidedetails .card-upgrade svg {
+    width: 2rem;
+    height: 2rem;
 }
