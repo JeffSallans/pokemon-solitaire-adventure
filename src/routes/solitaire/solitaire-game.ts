@@ -6,8 +6,8 @@ import * as _ from "lodash";
 import type { SolitaireCard } from './models/solitaire-card';
 import { SolitaireBattle } from './solitaire-battle';
 
-import type { BattleCard } from './models/battle-card';
 import type { GymLeaderResponse } from './models/gym-leader-response';
+import { goto } from '$app/navigation';
 
 
 /** Manages the game state of the pokemon solitaire game */
@@ -349,7 +349,8 @@ export class SolitaireGame {
 
 		// Check if player lost
 		if (get(this.moves) == 0) {
-			document.write('YOU LOSE, you ran out of moves. Refresh to play again');
+			console.log('YOU LOSE, you ran out of moves. Refresh to play again');
+			goto('/defeat');
 		}
 	}
 
@@ -427,12 +428,15 @@ export class SolitaireGame {
 
 		// Check if player lost
 		if (!playerWon && get(this.moves) == 0) {
-			document.write('YOU LOSE, you ran out of moves. Refresh to play again');
+			console.log('YOU LOSE, you ran out of moves. Refresh to play again');
+			goto('/defeat');
+			return;
 		}
 
 		// If the player won add more cards
 		if (playerWon && this.defeatedGymLeaders == 2) {
-			document.write('YOU WIN, Refresh to play again');
+			console.log('YOU WIN, Refresh to play again');
+			goto('/victory');
 		}
 		else if (playerWon) {
 			// Update defeated indicator
