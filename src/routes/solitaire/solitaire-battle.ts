@@ -57,8 +57,8 @@ export class SolitaireBattle {
 	private createCard(card: SolitaireCard): BattleCard  {
 		return {
 			id: _.uniqueId('battlecard'),
-			health: Number.parseInt(card.cardDef.hp || '100'),
-			maxHealth: Number.parseInt(card.cardDef.hp || '100'),
+			health: card.maxHealth * 10,
+			maxHealth: card.maxHealth * 10,
 			isKnockedOut: false,
 			isAsleep: false,
 			isBurned: false,
@@ -75,7 +75,7 @@ export class SolitaireBattle {
 		this.dealDamage(get(this.activeOpponent), this.activePlayer, move);
 	}
 
-	/**  */
+	/** Performs the users turn */
 	playerTurn() {
 		const move = this.pickMove(get(this.activePlayer), get(this.activeOpponent));
 		this.dealDamage(get(this.activePlayer), this.activeOpponent, move);
@@ -112,24 +112,7 @@ export class SolitaireBattle {
 		return 'Battling';
 	}
 
-	calculateMove(user: BattleCard, attack: Attack): BattleMove {
-		const damage = Number.parseInt(attack.damage) || 0;
-		return {
-			id: _.uniqueId('battlemove'),
-			name: attack.name,
-			damageCalculation: 'standard',
-			damage,
-			maxDamage: damage,
-			type: _.get(user, 'cardInfo.cardDef.types[0]', Type.Colorless),
-			
-			setAsleep: false,
-			setConfused: false,
-			setParalyzed: false,
-			setBurned: false,
-			setPoisoned: false,
-		}
-	}
-
+	/** Returns the details of the users move */
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	pickMove(user: BattleCard | null, target: BattleCard | null): BattleMove {
 		if (user == null) {
@@ -147,8 +130,20 @@ export class SolitaireBattle {
 				setPoisoned: false,
 			}
 		}
-		const possibleMoves = _.map(user.cardInfo.cardDef.attacks, (a) => this.calculateMove(user, a));
-		return _.orderBy(possibleMoves, 'maxDamage', 'desc')[0];
+
+		return {
+			id: _.uniqueId('battlemove'),
+			name: 'splash',
+			damage: user.cardInfo.attack * 10,
+			type: user.cardInfo.type,
+			damageCalculation: 'standard',
+			maxDamage: user.cardInfo.attack * 10,
+			setAsleep: false,
+			setBurned: false,
+			setConfused: false,
+			setParalyzed: false,
+			setPoisoned: false,
+		};
 	}
 
 	/** Updates the models and UI with the damage result */
