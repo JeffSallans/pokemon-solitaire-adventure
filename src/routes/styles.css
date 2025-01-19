@@ -147,6 +147,7 @@ button:focus:not(:focus-visible) {
 	background: rgb(186 176 196);
     background: linear-gradient(90deg, rgb(177 175 183) 0%, rgb(194 178 207) 100%);
 	color: grey;
+	fill: grey;
 }
 
 .psa--secondary:not(:disabled):hover {
@@ -296,6 +297,10 @@ button.psa--image {
 	width: 30%;
 }
 
+.set-container img.set{
+	width: 29vw;
+}
+
 .tutorial-button {
     position: absolute;
     right: 4rem;
@@ -315,4 +320,8 @@ button.psa--image {
 .psa--card_hidedetails .card-upgrade svg {
     width: 2rem;
     height: 2rem;
+}
+
+.tutorial-container .psa--icon svg {
+    fill: white;
 }
