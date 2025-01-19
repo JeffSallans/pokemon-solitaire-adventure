@@ -5,7 +5,7 @@
 
 <script>
     import titleUrl from '$lib/images/title.png';
-    import pikachuDanceUrl from '$lib/images/defeats/pikachu-dance.gif';
+    import pikachuDanceUrl from '$lib/images/victories/pikachu-dance.gif';
 	import { flip } from "svelte/animate";
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
