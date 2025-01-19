@@ -442,6 +442,9 @@ export class SolitaireGame {
 			// Update defeated indicator
 			this.defeatedGymLeaders++;
 
+			// Reward move back to player
+			this.moves.update((n) => n + 1);
+
 			// Remove playable bench used
 			this.stacks.update(s => {
 				for (const stack of s) {

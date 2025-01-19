@@ -35,14 +35,14 @@
             <div class="tutorial--image-container"><img src={trainerUrl} alt="trainer"></div>
             <div class="tutorial--reason">You can see the moves left at the top of the screen.</div>
             <div class="tutorial--image-container"><img src={movesHeaderUrl} alt="moves"></div>
-            <div class="tutorial--reason">You start with 4 stack of cards. You can only interact with the top card on each stack.</div>
+            <div class="tutorial--reason">You start with 4 stacks of cards and can only interact with the top card on each stack.</div>
             <div class="tutorial--reason">You can use <MoveIcon /> to move, upgrade, or battle the top cards in each stack.</div>
             <div class="tutorial--image-container"><img src={stacksUrl} alt="stacks"></div>
-            <div class="tutorial--reason">To get more <MoveIcon /> by trading a top card if its a trainer or the needed engergy type.</div>
+            <div class="tutorial--reason">Get more <MoveIcon /> by trading a top card if its a trainer or the needed energy type.</div>
             <div class="tutorial--reason">When you don't have a card selected, tap or click any card to see a larger version.</div>
             <div class="tutorial--reason">You can upgrade a card once, indicated by <StarIcon />. This will increase a cards stats for battle.</div>
             <div class="tutorial--image-container"><img src={tradeAndUpgradeUrl} alt="trade and upgrade"></div>
-            <div class="tutorial--reason">When you battle the top cards in your stacks battle the trainers cards going left to right.</div>
+            <div class="tutorial--reason">When you battle the top cards in your stacks face off against the trainer's cards going left to right.</div>
             <div class="tutorial--reason">Losing to a trainer will cost you 1 <MoveIcon />.</div>
             <div class="tutorial--reason">Beating a trainer, will add more cards to the top of your stacks.</div>
             <div class="tutorial--image-container"><img src={battleUrl} alt="battle"></div>
