@@ -298,7 +298,7 @@ button.psa--image {
 }
 
 .set-container img.set{
-	width: 29vw;
+	max-width: 29vw;
 }
 
 .tutorial-button {
