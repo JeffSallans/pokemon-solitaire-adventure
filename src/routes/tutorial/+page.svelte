@@ -11,15 +11,10 @@
     import tradeAndUpgradeUrl from '$lib/images/tutorial/tutorial-trade-and-upgrade.png';
     import battleUrl from '$lib/images/tutorial/tutorial-battle.png';
 
-    import { flip } from "svelte/animate";
     import { goto } from '$app/navigation';
-    import { page } from '$app/stores';
 	import MoveIcon from '../components/MoveIcon.svelte';
 	import StarIcon from '../components/StarIcon.svelte';
     
-    const cardSet = $page.url.searchParams.get('cardSet') || 'base1';
-
-    const flipDurationMs = 100;
 
     function home() {
         goto('/');
