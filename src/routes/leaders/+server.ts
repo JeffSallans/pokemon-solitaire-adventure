@@ -42,20 +42,47 @@ const leaders = {
 		},
 		adventures: [
 			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water], consider: false},
 			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass], consider: false},
 			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting], consider: false},
 		]
 	},
-
+	base2: {
+		firstLeader: {
+			name: 'Erica',
+			/** Assuming file path from src/lib/images/trainers/ */
+			imageUrl: mistyImage,
+			party: [
+				await findCardByID(''), // Odish 
+				await findCardByID(''), // Parisect 
+				await findCardByID(''), // Viloaplum - Star?
+			],
+		},
+		secondLeader: {
+			name: 'Koga',
+			imageUrl: surgeImage,
+			party: [
+				await findCardByID(''), // Koffing
+				await findCardByID(''), // Koffing
+				await findCardByID('base3-45'), // Weezing 60/60
+				await findCardByID('base3-13'), // Muk - Star?
+			],
+		},
+		thirdLeader: {
+			name: 'Sabrina',
+			imageUrl: blaineImage,
+			party: [
+				await findCardByID(''), // Mr mime - Star?
+				await findCardByID(''), // Venomoth
+				await findCardByID(''), // Abra 
+				await findCardByID(''), // Alakazam - Star?
+			]
+		},
+		adventures: [
+			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire], consider: false},
+			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting], consider: false},
+			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water], consider: false},
+		]
+	},
 }
 
 

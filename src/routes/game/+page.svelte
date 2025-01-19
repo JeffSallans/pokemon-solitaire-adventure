@@ -69,7 +69,8 @@
 
 
 <div>
-    <div class="title-container">
+    <div class="title-container"></div>
+    <div class="title-container title-container-fixed">
         <img class="title-icon" alt="pokemon-solitaire-adventure" src="{iconImage}"/>
         <div class="title-moves money">Moves Left: 
             {#each {length: $moves} as _, i} <MoveIcon />{/each}
@@ -388,8 +389,16 @@
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: flex-start;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.title-container-fixed {
+    top:0;
+    position: fixed;
+    z-index: 100;
+    background-color: #290f2c;
+    width: 100vw;
 }
 
 img.title-icon {
