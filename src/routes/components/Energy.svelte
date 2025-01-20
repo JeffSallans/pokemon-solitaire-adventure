@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PokemonTCG } from 'pokemon-tcg-sdk-typescript';
+    import colorlessEnergyUrl from '$lib/images/energies/30px-Colorless-attack.png';
     import darknessEnergyUrl from '$lib/images/energies/30px-Darkness-attack.png';
     import fairyEnergyUrl from '$lib/images/energies/30px-Fairy-attack.png';
     import fightingEnergyUrl from '$lib/images/energies/30px-Fighting-attack.png';
@@ -13,7 +14,9 @@
     export let energyType: PokemonTCG.Type = PokemonTCG.Type.Grass;
 
     let energyUrl = grassEnergyUrl;
-    if (energyType == PokemonTCG.Type.Darkness) {
+    if (energyType == PokemonTCG.Type.Colorless) {
+        energyUrl = colorlessEnergyUrl;
+    } else if (energyType == PokemonTCG.Type.Darkness) {
         energyUrl = darknessEnergyUrl;
     } else if (energyType == PokemonTCG.Type.Fairy) {
         energyUrl = fairyEnergyUrl;
