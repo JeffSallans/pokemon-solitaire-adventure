@@ -309,6 +309,7 @@ export class SolitaireGame {
 		focusCard.attack += focusCard.upgradeAttack;
 		focusCard.maxHealth += focusCard.upgradeHealth;
 		this.focusCard.set(focusCard);
+		this.focusCard.set(null);
 		this.moves.update((m) => m - focusCard.upgradeCost);
 	}
 
