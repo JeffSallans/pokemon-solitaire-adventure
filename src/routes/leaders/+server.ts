@@ -7,6 +7,9 @@ const { includes, uniqueId } = pkg;
 import mistyImage from '$lib/images/trainers/misty.png';
 import surgeImage from '$lib/images/trainers/surge.png';
 import blaineImage from '$lib/images/trainers/blaine.png';
+import erikaImage from '$lib/images/trainers/erika.png';
+import kogaImage from '$lib/images/trainers/koga.png';
+import sabrinaImage from '$lib/images/trainers/sabrina.png';
 
 const leaders = {
 	base1: {
@@ -50,37 +53,37 @@ const leaders = {
 		firstLeader: {
 			name: 'Erica',
 			/** Assuming file path from src/lib/images/trainers/ */
-			imageUrl: mistyImage,
+			imageUrl: erikaImage,
 			party: [
-				await findCardByID(''), // Odish 
-				await findCardByID(''), // Parisect 
-				await findCardByID(''), // Viloaplum - Star?
+				await findCardByID('base2-58'), // Odish 
+				await findCardByID('base2-41'), // Parisect 
+				await findCardByID('base2-15'), // Viloaplum - Star?
 			],
 		},
 		secondLeader: {
 			name: 'Koga',
-			imageUrl: surgeImage,
+			imageUrl: kogaImage,
 			party: [
-				await findCardByID(''), // Koffing
-				await findCardByID(''), // Koffing
+				await findCardByID('base1-51'), // Koffing
+				await findCardByID('base1-51'), // Koffing
 				await findCardByID('base3-45'), // Weezing 60/60
 				await findCardByID('base3-13'), // Muk - Star?
 			],
 		},
 		thirdLeader: {
 			name: 'Sabrina',
-			imageUrl: blaineImage,
+			imageUrl: sabrinaImage,
 			party: [
-				await findCardByID(''), // Mr mime - Star?
-				await findCardByID(''), // Venomoth
-				await findCardByID(''), // Abra 
-				await findCardByID(''), // Alakazam - Star?
+				await findCardByID('base2-6'), // Mr mime - Star?
+				await findCardByID('base2-13'), // Venomoth
+				await findCardByID('base1-32'), // Kadabra 
+				await findCardByID('base1-1'), // Alakazam - Star?
 			]
 		},
 		adventures: [
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fire], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting], consider: false},
-			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Water], consider: false},
+			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass], consider: false},
+			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Psychic], consider: false},
+			{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Colorless], consider: false},
 		]
 	},
 }
