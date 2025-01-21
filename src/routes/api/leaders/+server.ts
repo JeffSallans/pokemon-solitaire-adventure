@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import pkg from 'lodash';
 import { getGymLeaderMetadata } from '../gym-leader-metadata';
-const { includes } = pkg;
+const { includes, keys } = pkg;
 
 
 /**
@@ -13,7 +13,7 @@ export async function GET(request: { url: { searchParams: { get: (arg0: string) 
 	
 	let cardSet = request.url.searchParams.get('cardSet') || '';
 	let cleanCardSet = 'base1';
-	let availableSets = ['base1', 'base2'];
+	let availableSets = keys(leaders) || ['base1', 'base2'];
 	if (includes(availableSets, cardSet)) {
 		cleanCardSet = cardSet;
 	}

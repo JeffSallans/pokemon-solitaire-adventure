@@ -17,6 +17,12 @@ import sabrinaVictoryImage from '$lib/images/victories/sabrina-victory.gif';
 import sabrinaDefeatImage from '$lib/images/defeats/sabrina-defeat.gif';
 import jungleImage from '$lib/images/tcg-sets/pack-jungle.png';
 
+import brockImage from '$lib/images/trainers/brock.png';
+import giovanniImage from '$lib/images/trainers/giovanni.png';
+import giovanniVictoryImage from '$lib/images/victories/giovanni-victory.gif';
+import giovanniDefeatImage from '$lib/images/defeats/giovanni-defeat.gif';
+import fossilImage from '$lib/images/tcg-sets/fossil-lapras.jpg';
+
 let gymLeaderMetadata: any = null;
 
 /** Returns the full level configuration for every set */
@@ -102,6 +108,46 @@ export async function getGymLeaderMetadata() {
 				{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass], consider: false},
 				{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting], consider: false},
 				{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Colorless], consider: false},
+			]
+		},
+		base3: {
+			packUrl: fossilImage,
+			victoryGif: giovanniVictoryImage,
+			defeatGif: giovanniDefeatImage,
+			firstLeader: {
+				name: 'Brock',
+				/** Assuming file path from src/lib/images/trainers/ */
+				imageUrl: brockImage,
+				party: [
+					await findCardByID('base3-47'), // Geodude 
+					await findCardByID('base3-57'), // Zubat 
+					await findCardByID('base3-36'), // Golem
+				],
+			},
+			secondLeader: {
+				name: 'Koga',
+				imageUrl: kogaImage,
+				party: [
+					await findCardByID('base1-51'), // Koffing
+					await findCardByID('base1-51'), // Koffing
+					await findCardByID('base3-45'), // Weezing 60/60
+					await findCardByID('base3-13'), // Muk - Star?
+				],
+			},
+			thirdLeader: {
+				name: 'Giovanni',
+				imageUrl: giovanniImage,
+				party: [
+					await findCardByID('base2-61'), // Rhyhorn
+					await findCardByID('base2-45'), // Rhydon
+					await findCardByID('base2-7'), // Nidoqueen
+					await findCardByID('base1-11'), // Nidoking
+				]
+			},
+			adventures: [
+				{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Grass], consider: false},
+				{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Fighting], consider: false},
+				{ id: uniqueId('adv'), reward: 2, conditionType: 'energy', conditionEnergy: [PokemonTCG.Type.Psychic], consider: false},
 			]
 		},
 	};

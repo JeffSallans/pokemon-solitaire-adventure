@@ -3,7 +3,7 @@
 	<meta name="description" content="A solitaire game using Pokemon TCG cards" />
 </svelte:head>
 
-<script>
+<script lang="ts">
 	import titleUrl from '$lib/images/title.png';
 	import baseUrl from '$lib/images/tcg-sets/pack-base.png';
 	import jungleUrl from '$lib/images/tcg-sets/pack-jungle.png';
@@ -14,27 +14,30 @@
     import { goto } from '$app/navigation';
     import { Stretch } from 'svelte-loading-spinners';
     import { send, receive } from './solitaire/animation-transition';
+    import type { PageData } from './$types';
+
+    let { data }: { data: PageData } = $props();
 
     const flipDurationMs = 100;
 
-    const TcgSets = [
+    const TcgSets = data.cardSetMetadata || [
         { id: 'base1', url: baseUrl },
         { id: 'base2', url: jungleUrl }
     ];
 
     let offset = 0;
 
-    let playableTcgSets = [
+    let playableTcgSets = $state([
         { id: null, url: null },
         TcgSets[0],
         TcgSets[1],
-    ];
+    ]);
 
     /**
 	 * Returns the new value for playableTcgSets based on the given offset
      * @param {number} newOffset
 	 */
-    function calculateNewPlayableTcgSets(newOffset) {
+    function calculateNewPlayableTcgSets(newOffset: number) {
         // Base case
         if (newOffset == 0) {
             return [
@@ -91,7 +94,7 @@
                 <img alt="Pokemon Solitaire Adventure" src="{titleUrl}" />
         </div>
 
-        <button class="psa--secondary tutorial-button" on:click={tutorial}>?</button>
+        <button class="psa--secondary tutorial-button" onclick={tutorial}>?</button>
 
         <div class="set-select-container">
             {#each playableTcgSets as tcgSet(tcgSet.id)}
@@ -110,9 +113,9 @@
         </div>
 
         <div class="tray-container">
-            <button class="psa--secondary" on:click={prev}>PREV</button>
-            <button class="psa--primary" on:click={play}>PLAY</button>
-            <button class="psa--secondary" on:click={next}>NEXT</button>
+            <button class="psa--secondary" onclick={prev}>PREV</button>
+            <button class="psa--primary" onclick={play}>PLAY</button>
+            <button class="psa--secondary" onclick={next}>NEXT</button>
         </div>
     </div>
 </div>
