@@ -27,16 +27,16 @@
 
     let game = new SolitaireGame();
 
-    let { moves, stacks, playableAdventures, currentGymLeader, focusCard, inspectCard } = game;
+    let { moves, stacks, playableAdventures, currentGymLeader, focusCard, inspectCard, allGymLeaders, battlePrepList } = game;
     let { activeOpponent, activePlayer, state } = game.battle;
 
     const flipDurationMs = 100;
 
     async function fetchData() {
         const cardSet = (new URLSearchParams(window.location.search)).get('cardSet');
-        const packsRes = await fetch(`/pack?cardSet=${cardSet}`);
+        const packsRes = await fetch(`/api/pack?cardSet=${cardSet}`);
         const packs = await packsRes.json();
-        const gymLeaderRes = await fetch(`/leaders?cardSet=${cardSet}`);
+        const gymLeaderRes = await fetch(`/api/leaders?cardSet=${cardSet}`);
         const leaders = await gymLeaderRes.json();
 
         game.setupGame(packs, leaders);
@@ -90,6 +90,7 @@
             <div class="gym">
                 <div class="gym-leader-container">
                     <img class="gym-leader-portrait" alt="{$currentGymLeader.name}" src="{$currentGymLeader.imageUrl}"/>
+                    <div class="gym-leader-progress-text">{allGymLeaders.indexOf($currentGymLeader) + 1} of {allGymLeaders}</div>
                 </div>
                 <div class="gym-party-container">
                     {#each $currentGymLeader.party as card(card.id)}
@@ -201,6 +202,20 @@
         </div>
     </div>
 
+    <div class="battle-prep-container">
+        {#each $battlePrepList as card(card.id)}
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <div class="psa--card" 
+                in:receive={{ key: card.id }}
+                out:send={{ key: card.id }}
+                animate:flip="{{duration: flipDurationMs}}"
+            >
+                <Card card={card} isStacked=false isFocused=false></Card>
+            </div>
+        {/each}
+    </div>
+
     {#if $moves < 3}
         <div class="danger-frame"></div>
     {/if}
@@ -271,10 +286,6 @@
             </div>
             {/if}
         </div>
-
-        <div class="battle-text"></div>
-        <div class="battle-win"></div>
-        <div class="battle-lose"></div>
     </div>
     {/if}
 

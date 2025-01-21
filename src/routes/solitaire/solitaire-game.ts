@@ -24,6 +24,8 @@ export class SolitaireGame {
 	playableAdventures: Writable<Adventure[]> = writable([]);
 	currentGymLeader: Writable<GymLeader | null> = writable(null);
 	stacks: Writable<SolitaireCard[][]> = writable([]);
+
+	battlePrepList: Writable<SolitaireCard[]> = writable([]);
 	
 	public get playableBench(): SolitaireCard[] {
 
@@ -425,6 +427,7 @@ export class SolitaireGame {
 
 		// Trigger auto battler
 		const playablePokemon = _.filter(this.playableBench, card => card.cardDef.supertype == 'Pokémon');
+		//await this.battlePrep()
 		const playerWon = await this.battle.start(opponentParty, playablePokemon);
 
 		// Check if player lost
@@ -475,6 +478,17 @@ export class SolitaireGame {
 
 			// Determine new gym leader
 			this.currentGymLeader.set(this.allGymLeaders[this.defeatedGymLeaders]);
+		}
+		else {
+			/*
+			// Remove playable bench used
+			this.battlePrep.update(s => {
+				for (const stack of s) {
+					(stack as SolitaireCard[]).pop();
+				}
+				return s;
+			});
+			*/
 		}
 	}
 	

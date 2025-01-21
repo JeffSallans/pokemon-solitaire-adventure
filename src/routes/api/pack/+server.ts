@@ -1,7 +1,8 @@
 import { PokemonTCG } from 'pokemon-tcg-sdk-typescript';
 import { json } from '@sveltejs/kit';
-import { generatePack } from '../solitaire/solitaire-pack';
-import pkg from 'lodash';
+import { generatePack } from '../../solitaire/solitaire-pack';
+import pkg, { keys } from 'lodash';
+import { getGymLeaderMetadata } from '../gym-leader-metadata';
 const { includes } = pkg;
 
 /**
@@ -11,9 +12,11 @@ const { includes } = pkg;
  * @returns 
  */
 export async function GET(request: { url: { searchParams: { get: (arg0: string) => string; }; }; }) {
-	let cardSet = request.url.searchParams.get('cardSet') || '';
+	let cardSet = request.url.searchParams.get('cardSet') || '';	
+	
 	let cleanCardSet = 'base1';
-	let availableSets = ['base1', 'base2'];
+	const gymLeaderMetadata = await getGymLeaderMetadata();
+	let availableSets = keys(gymLeaderMetadata) || ['base1', 'base2'];
 	if (includes(availableSets, cardSet)) {
 		cleanCardSet = cardSet;
 	}

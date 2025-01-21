@@ -1,6 +1,6 @@
 import type { PokemonTCG } from 'pokemon-tcg-sdk-typescript';
 import pkg from 'lodash';
-import { findCardsByQueries } from '../pokemon-api-cache/api-cache';
+import { findCardsByQueries } from '../api/pokemon-api-cache/api-cache';
 const { take, shuffle } = pkg;
 
 /**
