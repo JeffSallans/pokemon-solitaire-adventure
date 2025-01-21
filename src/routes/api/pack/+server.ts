@@ -1,9 +1,9 @@
 import { PokemonTCG } from 'pokemon-tcg-sdk-typescript';
 import { json } from '@sveltejs/kit';
 import { generatePack } from '../../solitaire/solitaire-pack';
-import pkg, { keys } from 'lodash';
+import pkg from 'lodash';
 import { getGymLeaderMetadata } from '../gym-leader-metadata';
-const { includes } = pkg;
+const { includes, keys } = pkg;
 
 /**
  * Generates a 11 card pokemon card pack for the given set name
