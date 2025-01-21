@@ -9,17 +9,20 @@
 	import { flip } from "svelte/animate";
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import type { PageProps } from './$types';
+    import type { PageData } from './$types';
 
-    let { data }: PageProps = $props();
-    
+    let { data }: { data: PageData } = $props();
+
     const cardSet = $page.url.searchParams.get('cardSet') || 'base1';
-
 
     const flipDurationMs = 100;
 
     function home() {
         goto('/');
+    }
+
+    function tutorial() {
+        goto('/tutorial');
     }
 
     function retry() {
@@ -39,8 +42,11 @@
             <div class="defeat--title">Defeat</div>
             <div class="defeat--reason">You ran out of moves</div>
             <div class="defeat--image-container"><img src={data.defeatGif} alt="Pikachu Sad About Ketchup"></div>
-            <button class="psa--secondary defeat--button" on:click={retry}>Retry</button>
-            <button class="psa--secondary defeat--button" on:click={home}>Pack Select</button>
+            <div>
+                <button class="psa--secondary defeat--button" on:click={retry}>Retry</button>
+                <button class="psa--secondary defeat--button" on:click={home}>Pack Select</button>
+                <button class="psa--secondary defeat--button" on:click={tutorial}>Tutorial</button>
+            </div>
         </div>
     </div>
 </div>
@@ -69,4 +75,7 @@
     margin-bottom: 2rem;
 }
 
+.defeat--button {
+    margin: 0 5px;
+}
 </style>

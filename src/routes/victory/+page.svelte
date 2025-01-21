@@ -3,13 +3,16 @@
 	<meta name="description" content="A solitaire game using Pokemon TCG cards" />
 </svelte:head>
 
-<script>
+<script lang="ts">
     import titleUrl from '$lib/images/title.png';
     import pikachuDanceUrl from '$lib/images/victories/pikachu-dance.gif';
 	import { flip } from "svelte/animate";
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    
+    import type { PageData } from './$types';
+
+    let { data }: { data: PageData } = $props();
+
     const cardSet = $page.url.searchParams.get('cardSet') || 'base1';
 
     const flipDurationMs = 100;
@@ -30,7 +33,7 @@
         <div class="victory-container">
             <div class="victory--title">Victory</div>
             <div class="victory--reason">Congratulations on completing challenge {cardSet}!</div>
-            <div class="victory--image-container"><img src={pikachuDanceUrl} alt="Pikachu Dance"></div>
+            <div class="victory--image-container"><img src={data.victoryGif} alt="Pikachu Dance"></div>
             <button class="psa--secondary victory--try-again" on:click={home}>Pack Select</button>
         </div>
     </div>

@@ -20,6 +20,8 @@ export class SolitaireGame {
 	packs: PokemonTCG.Card[][];
 	
 	defeatedGymLeaders: number;
+
+	cardSet: string = '';
 	
 	playableAdventures: Writable<Adventure[]> = writable([]);
 	currentGymLeader: Writable<GymLeader | null> = writable(null);
@@ -353,7 +355,7 @@ export class SolitaireGame {
 		// Check if player lost
 		if (get(this.moves) == 0) {
 			console.log('YOU LOSE, you ran out of moves. Refresh to play again');
-			goto('/defeat');
+			goto(`/defeat?cardSet=${this.cardSet}`);
 		}
 	}
 
@@ -433,14 +435,14 @@ export class SolitaireGame {
 		// Check if player lost
 		if (!playerWon && get(this.moves) == 0) {
 			console.log('YOU LOSE, you ran out of moves. Refresh to play again');
-			goto('/defeat');
+			goto(`/defeat?cardSet=${this.cardSet}`);
 			return;
 		}
 
 		// If the player won add more cards
 		if (playerWon && this.defeatedGymLeaders == 2) {
 			console.log('YOU WIN, Refresh to play again');
-			goto('/victory');
+			goto(`/victory?cardSet=${this.cardSet}`);
 		}
 		else if (playerWon) {
 			// Update defeated indicator
@@ -495,10 +497,10 @@ export class SolitaireGame {
 	/**
 	 * Create a game object from the player's cookie, or initialise a new game
 	 */
-	constructor(serialized: string | undefined = undefined) {
+	constructor(cardSet: string, serialized: string | undefined = undefined) {
 		console.log('Constructor');
 
-
+		this.cardSet = cardSet;
 		this.allAdventures = [];
 		this.allGymLeaders = [];
 

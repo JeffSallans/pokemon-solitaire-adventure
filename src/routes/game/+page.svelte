@@ -11,6 +11,7 @@
 	// @ts-ignore
 	import { onDestroy } from "svelte";
     import { Stretch } from 'svelte-loading-spinners';
+    import { page } from '$app/stores';
     import iconImage from '$lib/images/icon.png';
 	import { SolitaireGame } from "../solitaire/solitaire-game";
     import { send, receive } from '../solitaire/animation-transition';
@@ -25,21 +26,23 @@
 
 	/** @type {import('./$types').PageData} */
 
-    let game = new SolitaireGame();
+    const cardSet = $page.url.searchParams.get('cardSet') || 'base1';
+    let game = new SolitaireGame(cardSet);
 
-    let { moves, stacks, playableAdventures, currentGymLeader, focusCard, inspectCard, allGymLeaders, battlePrepList } = game;
+    let { moves, stacks, playableAdventures, currentGymLeader, focusCard, inspectCard, battlePrepList } = game;
     let { activeOpponent, activePlayer, state } = game.battle;
+    let allGymLeaders = [];
 
     const flipDurationMs = 100;
 
     async function fetchData() {
-        const cardSet = (new URLSearchParams(window.location.search)).get('cardSet');
         const packsRes = await fetch(`/api/pack?cardSet=${cardSet}`);
         const packs = await packsRes.json();
         const gymLeaderRes = await fetch(`/api/leaders?cardSet=${cardSet}`);
         const leaders = await gymLeaderRes.json();
 
         game.setupGame(packs, leaders);
+        allGymLeaders = game.allGymLeaders;
 
         if (packsRes.ok) {
             return packs;
@@ -90,7 +93,7 @@
             <div class="gym">
                 <div class="gym-leader-container">
                     <img class="gym-leader-portrait" alt="{$currentGymLeader.name}" src="{$currentGymLeader.imageUrl}"/>
-                    <div class="gym-leader-progress-text">{allGymLeaders.indexOf($currentGymLeader) + 1} of {allGymLeaders}</div>
+                    <div class="gym-leader-progress-text">{allGymLeaders.indexOf($currentGymLeader) + 1} of {allGymLeaders.length}</div>
                 </div>
                 <div class="gym-party-container">
                     {#each $currentGymLeader.party as card(card.id)}
@@ -466,7 +469,16 @@ img.title-icon {
 }
 
 img.gym-leader-portrait {
-    width: 12rem;
+    max-height: 20rem;
+    max-width: 12rem;
+    display: block;
+    margin: auto;
+}
+
+.gym-leader-progress-text {
+    font-size: medium;
+    text-align: center;
+    margin-top: 1rem;
 }
 
 .gym-party-container {

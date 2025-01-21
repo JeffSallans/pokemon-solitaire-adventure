@@ -13,6 +13,8 @@ import baseImage from '$lib/images/tcg-sets/pack-base.png';
 import erikaImage from '$lib/images/trainers/erika.png';
 import kogaImage from '$lib/images/trainers/koga.png';
 import sabrinaImage from '$lib/images/trainers/sabrina.png';
+import sabrinaVictoryImage from '$lib/images/victories/sabrina-victory.gif';
+import sabrinaDefeatImage from '$lib/images/defeats/sabrina-defeat.gif';
 import jungleImage from '$lib/images/tcg-sets/pack-jungle.png';
 
 let gymLeaderMetadata: any = null;
@@ -64,8 +66,8 @@ export async function getGymLeaderMetadata() {
 		},
 		base2: {
 			packUrl: jungleImage,
-			victoryGif: pikachuVictoryImage,
-			defeatGif: pikachuDefeatImage,
+			victoryGif: sabrinaVictoryImage,
+			defeatGif: sabrinaDefeatImage,
 			firstLeader: {
 				name: 'Erica',
 				/** Assuming file path from src/lib/images/trainers/ */
